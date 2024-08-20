@@ -19,6 +19,8 @@
         placeholder="Email address"
         prepend-inner-icon="mdi-email-outline"
         variant="outlined"
+        :disabled="disabled"
+        :loading="loading"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
@@ -41,6 +43,8 @@
         prepend-inner-icon="mdi-lock-outline"
         variant="outlined"
         @click:append-inner="visible = !visible"
+        :disabled="disabled"
+        :loading="loading"
       ></v-text-field>
 
       <v-card
@@ -59,6 +63,7 @@
         size="large"
         variant="tonal"
         block
+        @click="login"
       >
         Log In
       </v-btn>
@@ -76,9 +81,37 @@
 </template>
 
 <script>
+  import { authService } from '../services/authService';
+
   export default {
     data: () => ({
       visible: false,
+      disabled: false, 
+      loading: false
     }),
+
+    methods: {
+      async login() {
+        try {
+          this.disabled = true
+          this.loading = true
+          
+          const response = await authService.loginUser({
+            email: this.email,
+            password: this.password,
+          });
+            
+          console.log("la wbd despues del response")
+          console.log(response)
+          this.successMessage = response.message || 'Login successful'; // Maneja la respuesta aquí
+          this.$router.push('/home');
+        } catch (error) {
+          this.disabled = false
+          this.loading = false
+          this.$router.push('/signup');
+          this.$emit('notify', {message:"Login Failed", ok:false, show: true});
+        }
+      },
+    },
   }
 </script>

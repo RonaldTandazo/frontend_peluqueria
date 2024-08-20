@@ -22,6 +22,8 @@
         placeholder="Full Name"
         prepend-inner-icon="mdi-account"
         variant="outlined"
+        :disabled="disabled"
+        :loading="loading"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
@@ -34,6 +36,8 @@
         placeholder="Email address"
         prepend-inner-icon="mdi-email-outline"
         variant="outlined"
+        :disabled="disabled"
+        :loading="loading"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
@@ -49,6 +53,8 @@
         prepend-inner-icon="mdi-lock-outline"
         variant="outlined"
         @click:append-inner="visible = !visible"
+        :disabled="disabled"
+        :loading="loading"
       ></v-text-field>
 
       <v-btn
@@ -80,31 +86,35 @@
   export default {
     data: () => ({
       visible: false,
+      disabled: false,
+      loading: false,
       username: '',
       email: '',
       password: '',
-      errorMessages: []
     }),
 
     methods: {
-    async register() {
-      try {
-        console.log("la wbd en el try")
-        const response = await authService.registerUser({
-          username: this.username,
-          email: this.email,
-          password: this.password,
-        });
+      async register() {
+        try {
+          this.disabled = true
+          this.loading = true
           
-        console.log("la wbd despues del response")
-        console.log(response)
-        this.successMessage = response.message || 'Registration successful'; // Maneja la respuesta aquí
-        this.$router.push('/');
-      } catch (error) {
-        console.log(error)
-        this.errorMessages.push(error.message || 'Registration failed');
-      }
+          const response = await authService.registerUser({
+            username: this.username,
+            email: this.email,
+            password: this.password,
+          });
+            
+          console.log("la wbd despues del response")
+          console.log(response)
+          this.successMessage = response.message || 'Registration successful'; // Maneja la respuesta aquí
+          this.$router.push('/login');
+        } catch (error) {
+          this.disabled = false
+          this.loading = false
+          this.$emit('notify', {message:"Registration Failed", ok:false, show: true});
+        }
+      },
     },
-  },
   }
 </script>

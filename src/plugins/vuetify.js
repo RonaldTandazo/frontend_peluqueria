@@ -8,7 +8,9 @@ import {
     VCard,
     VTextField,
     VCardText,
-    VIcon
+    VIcon,
+    VAlert,
+    VSlideXReverseTransition
 } from 'vuetify/components';
 
 export default createVuetify({
@@ -18,7 +20,9 @@ export default createVuetify({
         VCard,
         VTextField,
         VCardText,
-        VIcon
+        VIcon,
+        VAlert,
+        VSlideXReverseTransition
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto
