@@ -1,4 +1,3 @@
-// src/services/authService.js
 import axios from './axios';
 
 const API_URL = process.env.VUE_APP_URL || 'http://localhost:8081/api';
@@ -6,7 +5,6 @@ const API_URL = process.env.VUE_APP_URL || 'http://localhost:8081/api';
 export const authService = {
     async registerUser(userData) {
         const response = await axios.post(`${API_URL}/register`, userData);
-        console.log(response)
         return response.data;
     },
 

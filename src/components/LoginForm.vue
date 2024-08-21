@@ -15,6 +15,7 @@
       <div class="text-subtitle-1 text-medium-emphasis">Account</div>
 
       <v-text-field
+        v-model='email'
         density="compact"
         placeholder="Email address"
         prepend-inner-icon="mdi-email-outline"
@@ -82,15 +83,43 @@
 
 <script>
   import { authService } from '../services/authService';
+  import { roleService } from '../services/roleService';
 
   export default {
     data: () => ({
       visible: false,
       disabled: false, 
-      loading: false
+      loading: false,
+      email:'',
+      password:'',
+      debounceTimeout: null
     }),
 
+    watch: {
+      email(newEmail) {
+        if (this.debounceTimeout) {
+          clearTimeout(this.debounceTimeout);
+        }
+        
+        this.debounceTimeout = setTimeout(() => {
+          if (newEmail) {
+            this.get_user_roles(newEmail);
+          }
+        }, 1000);
+      }
+    },
+
     methods: {
+      async get_user_roles(email) {
+        try {
+          console.log(email)
+          const roles = await roleService.get_user_roles(email);
+          console.log('Roles fetched:', roles);
+        } catch (error) {
+          this.$emit('notify', {message:"Role Search Failed", ok:false, show: true});
+        }
+      },
+
       async login() {
         try {
           this.disabled = true

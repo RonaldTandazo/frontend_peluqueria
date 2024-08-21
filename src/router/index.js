@@ -1,14 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from '../views/HomePage.vue';  // Asegúrate de importar el componente HomePage
+import HomePage from '../views/HomePage.vue';
 import LoginForm from '../components/LoginForm.vue';
-import SignUpForm from '../components/SignUpForm.vue';  // Asegúrate de importar el componente correcto
+import SignUpForm from '../components/SignUpForm.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'HomePage',
     component: HomePage,
     children: [
+      {
+        path: '',
+        redirect: 'login', // Redirige a /login cuando la ruta es /
+      },
       {
         path: 'login',
         name: 'LoginForm',
