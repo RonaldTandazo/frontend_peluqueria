@@ -12,9 +12,9 @@
       max-width="448"
       rounded="lg"
     >
-      <div class="text-subtitle-1 text-medium-emphasis">Account</div>
-
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">Account</div>
       <v-text-field
+        clearable
         v-model='email'
         density="compact"
         placeholder="Email address"
@@ -35,8 +35,8 @@
         >
           Forgot login password?</a>
       </div>
-
       <v-text-field
+        clearable
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
         density="compact"
@@ -47,6 +47,19 @@
         :disabled="disabled"
         :loading="loading"
       ></v-text-field>
+
+      <div v-if="showRoles" class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">Role</div>
+      <v-select
+        clearable
+        v-if="showRoles"
+        v-model="selectedRole"
+        :items="roles"
+        item-title="name"
+        item-value="role_id"
+        label="Select a role"
+        variant="solo"
+        return-object
+      ></v-select>
 
       <v-card
         class="mb-12"
@@ -92,11 +105,15 @@
       loading: false,
       email:'',
       password:'',
-      debounceTimeout: null
+      debounceTimeout: null,
+      roles: [],
+      showRoles: false,
+      selectedRole: null
     }),
 
     watch: {
       email(newEmail) {
+        this.showRoles = false
         if (this.debounceTimeout) {
           clearTimeout(this.debounceTimeout);
         }
@@ -112,9 +129,19 @@
     methods: {
       async get_user_roles(email) {
         try {
-          console.log(email)
-          const roles = await roleService.get_user_roles(email);
-          console.log('Roles fetched:', roles);
+          const response = await roleService.get_user_roles({email: email});
+
+          if(response.code == 303){
+            this.$emit('notify', {message: response.message, ok: false, show: true});
+            return null
+          }
+
+          this.roles = response.data.map(item => ({
+            role_id: item.role_id,
+            name: item.name
+          }))
+
+          this.showRoles = true
         } catch (error) {
           this.$emit('notify', {message:"Role Search Failed", ok:false, show: true});
         }
@@ -130,17 +157,15 @@
             password: this.password,
           });
             
-          console.log("la wbd despues del response")
           console.log(response)
-          this.successMessage = response.message || 'Login successful'; // Maneja la respuesta aquí
+          
           this.$router.push('/home');
         } catch (error) {
           this.disabled = false
           this.loading = false
-          this.$router.push('/signup');
           this.$emit('notify', {message:"Login Failed", ok:false, show: true});
         }
       },
-    },
+    }
   }
 </script>
