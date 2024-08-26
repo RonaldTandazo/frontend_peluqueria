@@ -6,27 +6,27 @@
 </template>
 
 <script>
-import NotificacionAlert from "../components/NotificationAlert.vue";
+  import NotificacionAlert from "../components/NotificationAlert.vue";
 
-export default {
-  name: 'HomePage',
-  components: {
-    NotificacionAlert
-  },
-  data() {
-    return {
-      showNotification: false,
-      notificationMessage: {message: '', ok: true, show: false}
-    };
-  },
-  methods: {
-    triggerNotification(info) {
-      this.notificationMessage = info;
-      this.showNotification = true;
-      setTimeout(() => {
-        this.showNotification = false;
-      }, 5000); // Oculta la notificación después de 5 segundos
+  export default {
+    name: 'HomePage',
+    components: {
+      NotificacionAlert
+    },
+    data() {
+      return {
+        showNotification: false,
+        notificationMessage: {message: '', ok: true, show: false}
+      };
+    },
+    methods: {
+      triggerNotification(info) {
+        this.notificationMessage = info;
+        this.showNotification = true;
+        setTimeout(() => {
+          this.showNotification = false;
+        }, 3000);
+      }
     }
   }
-}
 </script>

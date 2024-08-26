@@ -105,14 +105,13 @@
             password: this.password,
           });
             
-          console.log("la wbd despues del response")
-          console.log(response)
           this.successMessage = response.message || 'Registration successful'; // Maneja la respuesta aquí
           this.$router.push('/login');
         } catch (error) {
-          this.disabled = false
-          this.loading = false
           this.$emit('notify', {message:"Registration Failed", ok:false, show: true});
+        } finally {
+          this.loading = false
+          this.disabled = false
         }
       },
     },

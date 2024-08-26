@@ -14,7 +14,6 @@
     >
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">Account</div>
       <v-text-field
-        clearable
         v-model='email'
         density="compact"
         placeholder="Email address"
@@ -26,17 +25,14 @@
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
         Password
-
-        <a
+        <router-link
           class="text-caption text-decoration-none text-blue"
-          href="#"
-          rel="noopener noreferrer"
-          target="_blank"
+          to="/recovery"
         >
-          Forgot login password?</a>
+          Forgot login password?
+        </router-link>
       </div>
       <v-text-field
-        clearable
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
         density="compact"
@@ -122,7 +118,7 @@
           if (newEmail) {
             this.get_user_roles(newEmail);
           }
-        }, 1000);
+        }, 500);
       }
     },
 
@@ -136,11 +132,7 @@
             return null
           }
 
-          this.roles = response.data.map(item => ({
-            role_id: item.role_id,
-            name: item.name
-          }))
-
+          this.roles = response.data
           this.showRoles = true
         } catch (error) {
           this.$emit('notify', {message:"Role Search Failed", ok:false, show: true});
@@ -161,9 +153,10 @@
           
           this.$router.push('/home');
         } catch (error) {
-          this.disabled = false
-          this.loading = false
           this.$emit('notify', {message:"Login Failed", ok:false, show: true});
+        } finally {
+          this.loading = false
+          this.disabled = false
         }
       },
     }

@@ -11,7 +11,9 @@ import {
     VIcon,
     VAlert,
     VSlideXReverseTransition,
-    VSelect
+    VSelect,
+    VSheet,
+    VDivider
 } from 'vuetify/components';
 
 export default createVuetify({
@@ -24,7 +26,9 @@ export default createVuetify({
         VIcon,
         VAlert,
         VSlideXReverseTransition,
-        VSelect
+        VSelect,
+        VSheet,
+        VDivider
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto
