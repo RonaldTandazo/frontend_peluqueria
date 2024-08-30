@@ -33,6 +33,7 @@
         </router-link>
       </div>
       <v-text-field
+        v-model="password"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
         density="compact"
@@ -68,12 +69,14 @@
       </v-card>
 
       <v-btn
+        v-model="login_btn"
         class="mb-8"
         color="blue"
         size="large"
         variant="tonal"
         block
         @click="login"
+        :disabled="!isLoginDisable"
       >
         Log In
       </v-btn>
@@ -119,6 +122,12 @@
             this.get_user_roles(newEmail);
           }
         }, 500);
+      },
+    },
+
+    computed: {
+      isLoginDisable(){
+        return this.email != '' && this.password != '' && this.selectedRole != null;
       }
     },
 
@@ -127,7 +136,7 @@
         try {
           const response = await roleService.get_user_roles({email: email});
 
-          if(response.code == 303){
+          if(!response.success){
             this.$emit('notify', {message: response.message, ok: false, show: true});
             return null
           }
@@ -148,11 +157,15 @@
             email: this.email,
             password: this.password,
           });
-            
           console.log(response)
-          
-          this.$router.push('/home');
+          if (response.data) {
+            localStorage.setItem('jwt', response.data.token);
+            // this.$router.push('/home'); // Redirigir a la página principal
+          }
+
+          // this.$router.push('/home');
         } catch (error) {
+          console.log(error)
           this.$emit('notify', {message:"Login Failed", ok:false, show: true});
         } finally {
           this.loading = false

@@ -64,8 +64,9 @@
         variant="tonal"
         block
         @click="register"
+        :disabled="!isSingUpAvailable"
       >
-        Submit
+        Sign Up
       </v-btn>
 
       <v-card-text class="text-center">
@@ -91,9 +92,46 @@
       username: '',
       email: '',
       password: '',
+      availableEmail: true
     }),
 
+    watch: {
+      email(email) {
+        if (this.debounceTimeout) {
+          clearTimeout(this.debounceTimeout);
+        }
+        
+        this.debounceTimeout = setTimeout(() => {
+          if (email) {
+            this.verify_email(email);
+          }
+        }, 500);
+      }
+    },
+
+    computed: {
+      isSingUpAvailable(){
+        return this.email != '' && this.password != '' && this.username != '' && this.availableEmail
+      }
+    },
+
     methods: {
+      async verify_email(email){
+        try{
+          const response = await authService.verify_email({email: email})
+          if(!response.success){
+            this.availableEmail = false
+            this.$emit('notify', {message:response.message, ok:response.success, show: true});
+          }else{
+            this.availableEmail = true
+            this.$emit('notify', {message:response.message, ok:response.success, show: true});
+          }
+
+        }catch(error){
+          this.$emit('notify', {message:error.message, ok:false, show: true});
+        }
+      },
+
       async register() {
         try {
           this.disabled = true
@@ -108,7 +146,7 @@
           this.successMessage = response.message || 'Registration successful'; // Maneja la respuesta aquí
           this.$router.push('/login');
         } catch (error) {
-          this.$emit('notify', {message:"Registration Failed", ok:false, show: true});
+          this.$emit('notify', {message:error.message, ok:false, show: true});
         } finally {
           this.loading = false
           this.disabled = false

@@ -7,7 +7,7 @@
       border="start"
       :icon="info.ok ? '$success':'$error'"
       :title="info.message"
-      :color="info.ok ? 'lime-accent-3':'red-accent-4'"
+      :color="info.ok ? 'success':'red-accent-2'"
       variant="outlined"
       text-color="black"
     ></v-alert>
