@@ -13,7 +13,18 @@ import {
     VSlideXReverseTransition,
     VSelect,
     VSheet,
-    VDivider
+    VDivider,
+    VToolbar,
+    VApp,
+    VAppBar,
+    VSpacer,
+    VMain,
+    VContainer,
+    VMenu,
+    VList,
+    VSwitch,
+    VCardActions,
+    VListItem
 } from 'vuetify/components';
 
 export default createVuetify({
@@ -28,7 +39,18 @@ export default createVuetify({
         VSlideXReverseTransition,
         VSelect,
         VSheet,
-        VDivider
+        VDivider,
+        VToolbar,
+        VApp,
+        VAppBar,
+        VSpacer,
+        VMain,
+        VContainer,
+        VMenu,
+        VList,
+        VSwitch,
+        VCardActions,
+        VListItem
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto

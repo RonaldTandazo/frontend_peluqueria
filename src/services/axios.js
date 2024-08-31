@@ -12,7 +12,7 @@ const instance = axios.create({
 // Interceptor de solicitud
 instance.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('jwt');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,8 +30,8 @@ instance.interceptors.response.use(
   },
   error => {
     if (error.response && error.response.status === 401) {
-      // Redirigir a la página de login si el usuario no está autenticado
-      window.location.href = '/login';
+      localStorage.removeItem('token');
+      this.$router.push('/login');
     }
     return Promise.reject(error);
   }

@@ -24,7 +24,7 @@ export const authService = {
     },
 
     async reset_password(token, data){
-        const response = await axios.post(`${API_URL}/auth/reset_password`, data, {params: { token: token }})
+        const response = await axios.put(`${API_URL}/auth/reset_password`, data, {params: { token: token }})
         return response
     }
 };

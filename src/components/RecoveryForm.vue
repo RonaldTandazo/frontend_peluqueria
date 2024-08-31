@@ -31,6 +31,7 @@
             variant="tonal"
             block
             @click="recover_password"
+            :disabled="!isRecoverAvailable"
         >
             Recover Password
         </v-btn>
@@ -48,6 +49,12 @@
             loading: false,
             email:'',
         }),
+
+        computed: {
+            isRecoverAvailable(){
+                return this.email !== ''
+            }
+        },
   
         methods: {
             async recover_password() {
@@ -57,8 +64,8 @@
                 try {
                     const response = await authService.send_recover_email({email: this.email});
 
-                    if(response.code == 303){
-                        this.$emit('notify', {message: response.message, ok: false, show: true});
+                    if(!response.success){
+                        this.$emit('notify', {message: response.message, ok: response.success, show: true});
                         return null
                     }
 

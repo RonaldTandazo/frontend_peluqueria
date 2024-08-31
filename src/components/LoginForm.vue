@@ -157,15 +157,12 @@
             email: this.email,
             password: this.password,
           });
-          console.log(response)
+
           if (response.data) {
             localStorage.setItem('jwt', response.data.token);
-            // this.$router.push('/home'); // Redirigir a la página principal
+            this.$router.push('/dashboard');
           }
-
-          // this.$router.push('/home');
         } catch (error) {
-          console.log(error)
           this.$emit('notify', {message:"Login Failed", ok:false, show: true});
         } finally {
           this.loading = false

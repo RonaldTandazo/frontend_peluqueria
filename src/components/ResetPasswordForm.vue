@@ -102,7 +102,7 @@
 
                 const response = await authService.reset_password(this.token, data);
 
-                const message = response.code == 303 ? "This Link has Expired or been used":"Your Password has been reset successfully"
+                const message = !response.success ? "This Link has Expired or been used":"Your Password has been reset successfully"
                 const state = response.code
 
                 this.$emit('recover-success', {tittle: response.message, message: message, state: state});
