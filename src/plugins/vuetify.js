@@ -1,7 +1,6 @@
-// src/plugins/vuetify.js
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
-import '@mdi/font/css/materialdesignicons.css'; // Importa los estilos de Material Design Icons
+import '@mdi/font/css/materialdesignicons.css';
 import {
     VImg,
     VBtn,
@@ -24,7 +23,21 @@ import {
     VList,
     VSwitch,
     VCardActions,
-    VListItem
+    VListItem,
+    VAppBarNavIcon,
+    VListItemTitle,
+    VToolbarTitle,
+    VLayout,
+    VNavigationDrawer,
+    VTabs,
+    VTabsWindow,
+    VTabsWindowItem,
+    VTab,
+    VBreadcrumbs,
+    VRow,
+    VCol,
+    VSlider,
+    VAvatar
 } from 'vuetify/components';
 
 export default createVuetify({
@@ -50,7 +63,21 @@ export default createVuetify({
         VList,
         VSwitch,
         VCardActions,
-        VListItem
+        VListItem,
+        VAppBarNavIcon,
+        VListItemTitle,
+        VToolbarTitle,
+        VLayout,
+        VNavigationDrawer,
+        VTab,
+        VTabs,
+        VTabsWindow,
+        VTabsWindowItem,
+        VBreadcrumbs,
+        VRow,
+        VCol,
+        VSlider,
+        VAvatar
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto

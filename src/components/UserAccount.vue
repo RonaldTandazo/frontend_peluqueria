@@ -7,9 +7,11 @@
         >
             <template v-slot:activator="{ props }">
                 <v-btn
-                    color="indigo"
+                    class="user-icon"
                     v-bind="props"
+                    density="comfortable"
                     icon="mdi-account"
+                    variant="outlined"
                 >
                 </v-btn>
             </template>
@@ -18,8 +20,8 @@
                 <v-list>
                     <v-list-item
                         prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-                        :subtitle="userInfo ? userInfo.email:''"
-                        :title="userInfo ? userInfo.sub:''"
+                        :subtitle="userInfo ? userInfo.sub:''"
+                        :title="userInfo ? userInfo.username:''"
                     >
                     </v-list-item>
                 </v-list>
@@ -28,14 +30,35 @@
 
                 <v-list>
                     <v-list-item
-                        append-icon="mdi-logout"
                         key="1"
                         value="1"
+                        class="custom-icon"
+                        @click="edit_profile"
+                    >
+                        <v-list-item-title>
+                            Edit Profile
+                        </v-list-item-title>
+                        <template v-slot:append>
+                            <v-icon
+                                icon="mdi-account-edit"
+                                color="blue"
+                            ></v-icon>
+                        </template>
+                    </v-list-item>
+                    <v-list-item
+                        key="2"
+                        value="2"
                         @click="logout"
                     >
                         <v-list-item-title>
                             Logout
                         </v-list-item-title>
+                        <template v-slot:append>
+                            <v-icon
+                                icon="mdi-logout"
+                                color="red-accent-4"
+                            ></v-icon>
+                        </template>
                     </v-list-item>
                 </v-list>
             </v-card>
@@ -57,7 +80,6 @@
             if (token) {
                 try {
                     this.userInfo = jwtDecode(token);
-                    console.log(this.userInfo)
                 } catch (error) {
                     console.error('Invalid token', error);
                 }
@@ -65,6 +87,9 @@
         },
 
         methods: {
+            edit_profile(){
+                this.$router.push({ name: 'UserInformation' });
+            },
             logout(){
                 localStorage.removeItem('jwt');
                 this.$router.push({ name: 'LoginForm' });

@@ -53,7 +53,7 @@
         :items="roles"
         item-title="name"
         item-value="role_id"
-        label="Select a role"
+        placeholder="Select a role"
         variant="solo"
         return-object
       ></v-select>
@@ -113,6 +113,7 @@
     watch: {
       email(newEmail) {
         this.showRoles = false
+        this.selectedRole = null
         if (this.debounceTimeout) {
           clearTimeout(this.debounceTimeout);
         }
@@ -160,7 +161,7 @@
 
           if (response.data) {
             localStorage.setItem('jwt', response.data.token);
-            this.$router.push('/dashboard');
+            this.$router.push('/home');
           }
         } catch (error) {
           this.$emit('notify', {message:"Login Failed", ok:false, show: true});

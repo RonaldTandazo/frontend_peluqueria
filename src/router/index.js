@@ -7,6 +7,7 @@ import RecoveryForm from "../components/RecoveryForm.vue";
 import ResetPasswordForm from "@/components/ResetPasswordForm.vue";
 import SuccessComponent from "@/components/SuccessComponent.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
+import UserPage from "@/views/UserPage.vue";
 
 const routes = [
   {
@@ -53,16 +54,20 @@ const routes = [
     props: true,
   },
   {
-    path: '/dashboard',
+    path: "/home",
     component: DashboardPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/user",
+    component: UserPage,
     meta: { requiresAuth: true },
     children: [
       {
-        path: "",
-        name: "Dashboard",
-        component: RecoveryForm,
-      }
-    ]
+        path: "user_information",
+        name: "UserInformation"
+      },
+    ],
   },
   {
     path: "/:pathMatch(.*)*",
