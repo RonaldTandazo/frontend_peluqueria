@@ -26,6 +26,7 @@
 
 <style scoped>
 .custom-notification {
+  background-color: white;
   position: fixed;
   top: 20px;
   right: 20px;
