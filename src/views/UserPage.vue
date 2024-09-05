@@ -58,7 +58,6 @@
         }),
         methods: {
             triggerNotification(info) {
-                console.log(info)
                 this.notificationMessage = info;
                 this.showNotification = true;
                 setTimeout(() => {

@@ -55,6 +55,12 @@
                     icon: "mdi-account",
                     value: '2',
                     route: '/user/user_information'
+                },
+                {
+                    title: 'Patients',
+                    icon: "mdi-account-group",
+                    value: '3',
+                    route: '/patients'
                 }
             ],
         }),

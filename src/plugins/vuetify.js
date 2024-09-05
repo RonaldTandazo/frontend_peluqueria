@@ -37,7 +37,8 @@ import {
     VRow,
     VCol,
     VSlider,
-    VAvatar
+    VAvatar,
+    VTable
 } from 'vuetify/components';
 
 export default createVuetify({
@@ -77,7 +78,8 @@ export default createVuetify({
         VRow,
         VCol,
         VSlider,
-        VAvatar
+        VAvatar,
+        VTable
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto
