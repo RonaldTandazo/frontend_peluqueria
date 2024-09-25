@@ -39,7 +39,13 @@ import {
     VSlider,
     VAvatar,
     VDataTableServer,
-    VDataTableHeaders
+    VDataTableHeaders,
+    VExpansionPanel,
+    VExpansionPanels,
+    VExpansionPanelText,
+    VExpansionPanelTitle,
+    VDialog,
+    VTextarea
 } from 'vuetify/components';
 
 export default createVuetify({
@@ -81,7 +87,13 @@ export default createVuetify({
         VSlider,
         VAvatar,
         VDataTableServer,
-        VDataTableHeaders
+        VDataTableHeaders,
+        VExpansionPanel,
+        VExpansionPanels,
+        VExpansionPanelText,
+        VExpansionPanelTitle,
+        VDialog,
+        VTextarea
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto

@@ -10,6 +10,86 @@
             <v-row>
                 <AdaptativeBreadcrumbs :routes="routes"></AdaptativeBreadcrumbs>
             </v-row>
+            <v-row>
+                <v-expansion-panels variant="accordion">
+                    <v-expansion-panel title="Search Filters">
+                        <v-expansion-panel-text>
+                            <v-row cols="12">
+                                <v-col cols="3">
+                                    <v-text-field
+                                        v-model="identification"
+                                        density="compact"
+                                        label="Identification"
+                                        clearable
+                                        variant="outlined"
+                                        prepend-inner-icon="mdi-card-account-details"
+                                    >    
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="6">
+                                    <v-text-field
+                                        v-model="patient"
+                                        density="compact"
+                                        label="Patient"
+                                        clearable
+                                        variant="outlined"
+                                        prepend-inner-icon="mdi-account-injury"
+                                    >    
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="3">
+                                    <v-select
+                                        v-model="gender"
+                                        clearable
+                                        :items="genders"
+                                        item-title="label"
+                                        item-value="value"
+                                        label="Gender"
+                                        variant="outlined"
+                                        density="compact"
+                                        prepend-inner-icon="mdi-gender-male"
+                                        return-object
+                                    ></v-select>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="6" class="d-flex justify-start">
+                                    <v-btn
+                                        prepend-icon="mdi-account-plus"
+                                        color="white"
+                                        class="me-2"
+                                        ref="modalBtn"
+                                        @click="isModalOpen = true"
+                                    >
+                                        New Patient
+                                    </v-btn>
+
+                                    <v-dialog v-model="isModalOpen" max-width="600px">
+                                        <PatientModal :isModalOpen="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders"/>
+                                    </v-dialog>
+                                </v-col>
+                                <v-spacer></v-spacer>
+                                <v-col cols="6" class="d-flex justify-end">
+                                    <v-btn
+                                        prepend-icon="mdi-eraser"
+                                        color="black"
+                                        class="me-2"
+                                        @click="cleanFilters"
+                                    >
+                                        Clear
+                                    </v-btn>
+                                    <v-btn
+                                        prepend-icon="mdi-cloud-search"
+                                        color="blue-accent-2"
+                                    >
+                                        Search
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-expansion-panel-text>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-row>
             <v-row class="py-md-5">
                 <v-divider></v-divider>
             </v-row>
@@ -37,8 +117,11 @@
                                     <td class="text-right">{{ item.weight }}</td>
                                     <td class="text-right">{{ item.height }}</td>
                                     <td class="text-left">{{ item.gender }}</td>
-                                    <td class="text-left">{{ item.disease }}</td>
+                                    <td class="text-left">{{ item.phone }}</td>
                                     <td class="text-left">{{ item.direction }}</td>
+                                    <td class="text-left">{{ item.email }}</td>
+                                    <td class="text-left">{{ item.disease }}</td>
+                                    <td class="text-center"><v-icon>mdi-cog</v-icon></td>
                                 </tr>
                             </template>
                         </v-data-table-server>
@@ -53,6 +136,7 @@
 <script>
     import ToolBar from '../components/ToolBar.vue';
     import AdaptativeBreadcrumbs from '../components/AdaptativeBreadcrumbs.vue';
+    import PatientModal from '../components/PatientModal.vue';
     import { jwtDecode } from 'jwt-decode';
     import { patientsService } from "../services/patientsService";
 
@@ -61,9 +145,12 @@
         components: {
             ToolBar,
             AdaptativeBreadcrumbs,
+            PatientModal
         },
         data: () => ({
             userInfo: null,
+            isModalOpen: false,
+            state: "new",
             itemsPerPage: 5,
             routes: [
                 {
@@ -84,9 +171,19 @@
                 {title: "Weight (Kg)", key: 'weight', align: 'center', width: '120px', sortable: false},
                 {title: "Height (m)", key: 'height', align: 'center', width: '120px', sortable: false},
                 {title: "Gender", key: 'gender', align: 'center', width: '100px', sortable: false},
+                {title: "Phone Number", key: 'phone', align: 'center', width: '200px', sortable: false},
+                {title: "Direction", key: 'direction', align: 'center', width: '200px', sortable: false},
+                {title: "E-Mail", key: 'email', align: 'center', width: '200px', sortable: false},
                 {title: "Disease", key: 'disease', align: 'center', width: '200px', sortable: false},
-                {title: "Direction", key: 'direction', align: 'center', width: '200px', sortable: false}
+                {title: "", key: 'actions', align: 'center', width: '200px', sortable: false, }
             ],
+            genders: [
+                { label: 'Male', value: 'M' },
+                { label: 'Female', value: 'F' },
+            ],
+            gender: null,
+            patient: null,
+            identification: null,
             loading: true,
             patients: [],
             totalItems: 0,
@@ -124,7 +221,36 @@
                 } catch (error) {
                     this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
                 }
-            }
+            },
+            cleanFilters(){
+                this.patient = null
+                this.gender = null
+                this.identification = null
+            },
+            closeModal() {
+                this.isModalOpen = false;
+            },
+            saveNewPatient(patientData) {
+                console.log(patientData)
+                if(patientData.patient != null){
+                    const patient = patientData.patient
+    
+                    this.patients.push({
+                        patient: patient.name + " " + patient.lastname,
+                        identification: patient.identification,
+                        age: patient.age,
+                        weight: patient.weight,
+                        height: patient.height,
+                        gender: patient.gender != null ? patient.gender.label:null,
+                        phone: patient.phone,
+                        direction: patient.direction,
+                        email: patient.email,
+                        disease: patient.disease
+                    });
+                    
+                    this.closeModal();
+                }
+            },
         }
     }
 </script>
