@@ -45,7 +45,8 @@ import {
     VExpansionPanelText,
     VExpansionPanelTitle,
     VDialog,
-    VTextarea
+    VTextarea,
+    VTooltip
 } from 'vuetify/components';
 
 export default createVuetify({
@@ -93,7 +94,8 @@ export default createVuetify({
         VExpansionPanelText,
         VExpansionPanelTitle,
         VDialog,
-        VTextarea
+        VTextarea,
+        VTooltip
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto

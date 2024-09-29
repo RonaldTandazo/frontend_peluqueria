@@ -107,7 +107,7 @@
                             item-value="patient"
                             @update:options="getDoctorPatients"
                             fixed-header="true"
-                            width="4000px"
+                            width="4000 px"
                         >
                             <template v-slot:item="{ item }">
                                 <tr>
@@ -121,7 +121,53 @@
                                     <td class="text-left">{{ item.direction }}</td>
                                     <td class="text-left">{{ item.email }}</td>
                                     <td class="text-left">{{ item.disease }}</td>
-                                    <td class="text-center"><v-icon>mdi-cog</v-icon></td>
+                                    <td class="text-center">
+                                        <v-menu>
+                                            <template v-slot:activator="{ props }">
+                                                <v-btn
+                                                    v-bind="props"
+                                                    density="compact"
+                                                    icon="mdi-menu"
+                                                    variant="solo"
+                                                >
+                                                </v-btn>
+                                            </template>
+                                      
+                                            <v-list>
+                                                <v-list-item>
+                                                    <v-list-item-title>
+                                                        <v-btn
+                                                            density="compact"
+                                                            icon="mdi-text-box-edit"
+                                                            variant="solo"
+                                                            @click="isModalOpen = true; state = 'edit'"
+                                                        >
+                                                        </v-btn>
+                                                        <v-tooltip
+                                                            activator="parent"
+                                                            location="top"
+                                                        >Edit Information</v-tooltip>
+                                                        <v-dialog v-model="isModalOpen" max-width="600px">
+                                                            <PatientModal :isModalOpen="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="item"/>
+                                                        </v-dialog>
+                                                    </v-list-item-title>
+                                                    <v-divider class="my-2"></v-divider>
+                                                    <v-list-item-title>
+                                                        <v-btn
+                                                            density="compact"
+                                                            icon="mdi-receipt-text-arrow-right"
+                                                            variant="solo"
+                                                        >
+                                                        </v-btn>
+                                                        <v-tooltip
+                                                            activator="parent"
+                                                            location="top"
+                                                        >Generate Recipe</v-tooltip>
+                                                    </v-list-item-title>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-menu>
+                                    </td>
                                 </tr>
                             </template>
                         </v-data-table-server>
@@ -165,17 +211,17 @@
                 }
             ],
             columns: [
-                {title: "Patient", key: "patient", align: 'center', width: '200px', sortable: false},
-                {title: "Identification", key: 'identification', align: 'center', width: '150px', sortable: false},
+                {title: "Patient", key: "patient", align: 'center', width: '500px', sortable: false},
+                {title: "Identification", key: 'identification', align: 'center', width: '200px', sortable: false},
                 {title: "Age", key: 'age', align: 'center', width: '100px', sortable: false},
-                {title: "Weight (Kg)", key: 'weight', align: 'center', width: '120px', sortable: false},
-                {title: "Height (m)", key: 'height', align: 'center', width: '120px', sortable: false},
-                {title: "Gender", key: 'gender', align: 'center', width: '100px', sortable: false},
+                {title: "Weight (Kg)", key: 'weight', align: 'center', width: '150px', sortable: false},
+                {title: "Height (m)", key: 'height', align: 'center', width: '150px', sortable: false},
+                {title: "Gender", key: 'gender', align: 'center', width: '150px', sortable: false},
                 {title: "Phone Number", key: 'phone', align: 'center', width: '200px', sortable: false},
-                {title: "Direction", key: 'direction', align: 'center', width: '200px', sortable: false},
+                {title: "Direction", key: 'direction', align: 'center', width: '300px', sortable: false},
                 {title: "E-Mail", key: 'email', align: 'center', width: '200px', sortable: false},
-                {title: "Disease", key: 'disease', align: 'center', width: '200px', sortable: false},
-                {title: "", key: 'actions', align: 'center', width: '200px', sortable: false, }
+                {title: "Disease", key: 'disease', align: 'center', width: '300px', sortable: false},
+                {title: "", key: 'actions', align: 'center', width: '150px', sortable: false}
             ],
             genders: [
                 { label: 'Male', value: 'M' },
@@ -231,22 +277,43 @@
                 this.isModalOpen = false;
             },
             saveNewPatient(patientData) {
-                console.log(patientData)
                 if(patientData.patient != null){
                     const patient = patientData.patient
-    
-                    this.patients.push({
-                        patient: patient.name + " " + patient.lastname,
-                        identification: patient.identification,
-                        age: patient.age,
-                        weight: patient.weight,
-                        height: patient.height,
-                        gender: patient.gender != null ? patient.gender.label:null,
-                        phone: patient.phone,
-                        direction: patient.direction,
-                        email: patient.email,
-                        disease: patient.disease
-                    });
+                    if(patient.status == "new"){
+                        this.patients.push({
+                            patient_id: patient.patient_id,
+                            name: patient.name,
+                            lastname: patient.lastname,
+                            patient: patient.name + " " + patient.lastname,
+                            identification: patient.identification,
+                            age: patient.age,
+                            weight: patient.weight,
+                            height: patient.height,
+                            gender: patient.gender != null ? patient.gender.label:null,
+                            phone: patient.phone,
+                            direction: patient.direction,
+                            email: patient.email,
+                            disease: patient.disease
+                        });
+                    }else{
+                        const found_patient = this.patients.find(p => p.identification === patient.identification);
+
+                        if (found_patient) {
+                            found_patient.patient_id = patient.patient_id,
+                            found_patient.name = patient.name,
+                            found_patient.lastname = patient.lastname,
+                            found_patient.patient = patient.name + " " + patient.lastname,
+                            found_patient.identification = patient.identification,
+                            found_patient.age = patient.age,
+                            found_patient.weight = patient.weight,
+                            found_patient.height = patient.height,
+                            found_patient.gender = patient.gender != null ? patient.gender.label:null,
+                            found_patient.phone = patient.phone,
+                            found_patient.direction = patient.direction,
+                            found_patient.email = patient.email,
+                            found_patient.disease = patient.disease
+                        }
+                    }
                     
                     this.closeModal();
                 }

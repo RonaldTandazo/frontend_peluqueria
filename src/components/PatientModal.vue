@@ -3,7 +3,7 @@
         <form @submit.prevent="savePatient">
             <v-card
                 prepend-icon="mdi-account-injury"
-                :title="state == 'new' ? 'New Patient':'Update Patient Information'"
+                :title="state == 'new' ? 'New Patient':'Edit Information'"
             >
                 <v-divider></v-divider>
                 <v-card-text>
@@ -230,8 +230,8 @@
                         text="Save"
                         variant="tonal"
                         :disabled="v$.$invalid"
-                        @click="savePatient"
                         prepend-icon="mdi-content-save"
+                        type="submit"
                     ></v-btn>
                 </v-card-actions>
             </v-card>
@@ -258,11 +258,16 @@
         genders: {
             type: Array,
             required: true
-        }
+        },
+        record: {
+            type: Object,
+            required: false
+        }        
     });
 
     // Reactive state
     const internalModalOpen = reactive({ value: props.isModalOpen });
+
     const patient = reactive({
         name: null,
         lastname: null,
@@ -274,7 +279,18 @@
         phone: null,
         direction: null,
         email: null,
-        disease: null
+        disease: null,
+        status: props.state
+    });
+
+    if (props.state !== "new") {
+        Object.assign(patient, props.record);
+    }
+
+    watch(() => props.record, (newRecord) => {
+        if (props.state !== "new") {
+            Object.assign(patient, newRecord);
+        }
     });
 
     const emit = defineEmits(['save', 'close']);
@@ -301,9 +317,9 @@
 
     // Methods
     function savePatient() {
-        // if (v$.value.$invalid) return; // Prevent saving if invalid
+        if (v$.value.$invalid) return; // Prevent saving if invalid
         // // Emit save event with patient data
-        // emit('save', { patient });
+        emit('save', { patient });
     }
 
     const handleBlur = (field) => {
