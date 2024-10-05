@@ -59,13 +59,13 @@
                                         color="white"
                                         class="me-2"
                                         ref="modalBtn"
-                                        @click="isModalOpen = true"
+                                        @click="isModalOpen = true; state='new'"
                                     >
                                         New Patient
                                     </v-btn>
 
                                     <v-dialog v-model="isModalOpen" max-width="600px">
-                                        <PatientModal :isModalOpen="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders"/>
+                                        <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
                                     </v-dialog>
                                 </v-col>
                                 <v-spacer></v-spacer>
@@ -111,12 +111,12 @@
                         >
                             <template v-slot:item="{ item }">
                                 <tr>
-                                    <td class="text-left">{{ item.patient }}</td>
+                                    <td class="text-left">{{ item.name + " "+ item.lastname }}</td>
                                     <td class="text-left">{{ item.identification }}</td>
                                     <td class="text-right">{{ item.age }}</td>
                                     <td class="text-right">{{ item.weight }}</td>
                                     <td class="text-right">{{ item.height }}</td>
-                                    <td class="text-left">{{ item.gender }}</td>
+                                    <td class="text-left">{{ item.gender == 'M' ? 'Male':(item.gender == 'F' ? 'Female':null) }}</td>
                                     <td class="text-left">{{ item.phone }}</td>
                                     <td class="text-left">{{ item.direction }}</td>
                                     <td class="text-left">{{ item.email }}</td>
@@ -140,7 +140,7 @@
                                                             density="compact"
                                                             icon="mdi-text-box-edit"
                                                             variant="solo"
-                                                            @click="isModalOpen = true; state = 'edit'"
+                                                            @click="isModalOpen = true; state = 'edit'; record=item"
                                                         >
                                                         </v-btn>
                                                         <v-tooltip
@@ -148,7 +148,7 @@
                                                             location="top"
                                                         >Edit Information</v-tooltip>
                                                         <v-dialog v-model="isModalOpen" max-width="600px">
-                                                            <PatientModal :isModalOpen="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="item"/>
+                                                            <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
                                                         </v-dialog>
                                                     </v-list-item-title>
                                                     <v-divider class="my-2"></v-divider>
@@ -195,8 +195,9 @@
         },
         data: () => ({
             userInfo: null,
+            record: null,
+            state: 'new',
             isModalOpen: false,
-            state: "new",
             itemsPerPage: 5,
             routes: [
                 {
@@ -276,46 +277,52 @@
             closeModal() {
                 this.isModalOpen = false;
             },
-            saveNewPatient(patientData) {
-                if(patientData.patient != null){
-                    const patient = patientData.patient
-                    if(patient.status == "new"){
-                        this.patients.push({
-                            patient_id: patient.patient_id,
-                            name: patient.name,
-                            lastname: patient.lastname,
-                            patient: patient.name + " " + patient.lastname,
-                            identification: patient.identification,
-                            age: patient.age,
-                            weight: patient.weight,
-                            height: patient.height,
-                            gender: patient.gender != null ? patient.gender.label:null,
-                            phone: patient.phone,
-                            direction: patient.direction,
-                            email: patient.email,
-                            disease: patient.disease
-                        });
-                    }else{
-                        const found_patient = this.patients.find(p => p.identification === patient.identification);
+            async saveNewPatient(patientData) {
+                try{
+                    if(patientData != null){
+                        const patient = patientData
+                        patient.doctorId = this.userInfo.user_id
+                        if(patient.status == "new"){
+                            this.patients.push({
+                                patient_id: patient.patient_id,
+                                name: patient.name,
+                                lastname: patient.lastname,
+                                identification: patient.identification,
+                                age: patient.age,
+                                weight: patient.weight,
+                                height: patient.height,
+                                gender: patient.gender,
+                                phone: patient.phone,
+                                direction: patient.direction,
+                                email: patient.email,
+                                disease: patient.disease,
+                            });
+                            this.totalItems += 1 
+                            
+                            await patientsService.store(patient)
+                        }else{
+                            const found_patient = this.patients.find(p => p.identification === patient.identification);
 
-                        if (found_patient) {
-                            found_patient.patient_id = patient.patient_id,
-                            found_patient.name = patient.name,
-                            found_patient.lastname = patient.lastname,
-                            found_patient.patient = patient.name + " " + patient.lastname,
-                            found_patient.identification = patient.identification,
-                            found_patient.age = patient.age,
-                            found_patient.weight = patient.weight,
-                            found_patient.height = patient.height,
-                            found_patient.gender = patient.gender != null ? patient.gender.label:null,
-                            found_patient.phone = patient.phone,
-                            found_patient.direction = patient.direction,
-                            found_patient.email = patient.email,
-                            found_patient.disease = patient.disease
+                            if (found_patient) {
+                                found_patient.patient_id = patient.patient_id,
+                                found_patient.name = patient.name,
+                                found_patient.lastname = patient.lastname,
+                                found_patient.identification = patient.identification,
+                                found_patient.age = patient.age,
+                                found_patient.weight = patient.weight,
+                                found_patient.height = patient.height,
+                                found_patient.gender = patient.gender,
+                                found_patient.phone = patient.phone,
+                                found_patient.direction = patient.direction,
+                                found_patient.email = patient.email,
+                                found_patient.disease = patient.disease,
+                                found_patient.doctorId = this.userInfo.user_id
+                            }
+                            await patientsService.update(found_patient.patient_id, found_patient)
                         }
                     }
-                    
-                    this.closeModal();
+                }catch (error) {
+                    console.log(error)
                 }
             },
         }

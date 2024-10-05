@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="internalModalOpen" max-width="55%" transition="dialog-top-transition" persistent>
+    <v-dialog :value="internalModalOpen" max-width="55%" transition="dialog-top-transition" persistent>
         <form @submit.prevent="savePatient">
             <v-card
                 prepend-icon="mdi-account-injury"
@@ -10,8 +10,8 @@
                     <v-row cols="12">
                         <v-col cols="6">
                             <v-text-field
-                                v-model="patient.name"
-                                :error-messages="v$.patient.name.$error ? ['Name is required'] : []"
+                                v-model="data.name"
+                                :error-messages="v$.name.$errors.map(e => e.$message)"
                                 clearable
                                 density="compact"
                                 label="Name"
@@ -22,8 +22,8 @@
                         </v-col>
                         <v-col cols="6">
                             <v-text-field
-                                v-model="patient.lastname"
-                                :error-messages="v$.patient.lastname.$error ? ['Last Name is required'] : []"
+                                v-model="data.lastname"
+                                :error-messages="v$.lastname.$errors.map(e => e.$message)"
                                 clearable
                                 density="compact"
                                 label="Last Name"
@@ -36,8 +36,8 @@
                     <v-row cols="12">
                         <v-col cols="6">
                             <v-text-field
-                                v-model="patient.identification"
-                                :error-messages="v$.patient.identification.$error ? ['Identification is required'] : []"
+                                v-model="data.identification"
+                                :error-messages="v$.identification.$errors.map(e => e.$message)"
                                 clearable
                                 density="compact"
                                 label="Identification"
@@ -51,7 +51,7 @@
                                 Age
                             </div>
                             <v-slider
-                                v-model="patient.age"
+                                v-model="data.age"
                                 :min="0"
                                 :max="110"
                                 :step="1"
@@ -61,7 +61,7 @@
                             >
                                 <template v-slot:append>
                                     <v-text-field
-                                        v-model="patient.age"
+                                        v-model="data.age"
                                         density="compact"
                                         variant="outlined"
                                         style="width: 85px"
@@ -82,7 +82,7 @@
                                 Weight(Kg)
                             </div>
                             <v-slider
-                                v-model="patient.weight"
+                                v-model="data.weight"
                                 :min="45"
                                 :max="150"
                                 :step="0.1"
@@ -92,7 +92,7 @@
                             >
                                 <template v-slot:append>
                                     <v-text-field
-                                        v-model="patient.weight"
+                                        v-model="data.weight"
                                         density="compact"
                                         variant="outlined"
                                         style="width: 93px"
@@ -113,7 +113,7 @@
                                 Height(m)
                             </div>
                             <v-slider
-                                v-model="patient.height"
+                                v-model="data.height"
                                 :min="0"
                                 :max="3"
                                 :step="0.01"
@@ -123,7 +123,7 @@
                             >
                                 <template v-slot:append>
                                     <v-text-field
-                                        v-model="patient.height"
+                                        v-model="data.height"
                                         density="compact"
                                         variant="outlined"
                                         style="width: 85px"
@@ -141,8 +141,8 @@
                     <v-row cols="12">
                         <v-col cols="6">
                             <v-select
-                                v-model="patient.gender"
-                                :error-messages="v$.patient.gender.$error ? ['Gender is required'] : []"
+                                v-model="data.gender"
+                                :error-messages="v$.gender.$errors.map(e => e.$message)"
                                 clearable
                                 :items="genders"
                                 item-title="label"
@@ -151,14 +151,13 @@
                                 variant="outlined"
                                 density="compact"
                                 prepend-inner-icon="mdi-gender-male"
-                                return-object
                                 required
                             ></v-select>
                         </v-col>
                         <v-col cols="6">
                             <v-text-field
-                                v-model="patient.phone"
-                                :error-messages="v$.patient.phone.$error ? ['Phone Number is required'] : []"
+                                v-model="data.phone"
+                                :error-messages="v$.phone.$errors.map(e => e.$message)"
                                 clearable
                                 prepend-inner-icon="mdi-phone"
                                 label="Phone Number"
@@ -171,37 +170,35 @@
                     <v-row cols="12">
                         <v-col cols="6">
                             <v-text-field
-                                v-model="patient.direction"
-                                :error-messages="v$.patient.direction.$error ? ['Direction is required'] : []"
+                                v-model="data.direction"
+                                :error-messages="v$.direction.$errors.map(e => e.$message)"
                                 clearable
                                 prepend-inner-icon="mdi-map-marker"
                                 label="Direction"
                                 variant="outlined"
                                 density="compact"
                                 required
-                                @blur="handleBlur('direction')"
                             ></v-text-field>
                         </v-col>
                         <v-col cols="6">
                             <v-text-field
-                                v-model="patient.email"
-                                :error-messages="v$.patient.email.$error ? ['E-Mail is required'] : []"
+                                v-model="data.email"
+                                :error-messages="v$.email.$errors.map(e => e.$message)"
                                 clearable
                                 prepend-inner-icon="mdi-email"
                                 label="E-Mail"
                                 variant="outlined"
                                 density="compact"
                                 required
-                                @blur="handleBlur('email')"
-                                @input="handleInput('email')"
+                                @input="v$.email.$touch"
                             ></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row cols="12">
                         <v-col cols="12">
                             <v-textarea
-                                v-model="patient.disease"
-                                :error-messages="v$.patient.disease.$error ? ['Disease is required'] : []"
+                                v-model="data.disease"
+                                :error-messages="v$.disease.$errors.map(e => e.$message)"
                                 label="Disease"
                                 prepend-inner-icon="mdi-medical-bag"
                                 density="compact"
@@ -211,7 +208,6 @@
                                 counter
                                 auto-grow
                                 required
-                                @blur="handleBlur('disease')"
                             ></v-textarea>
                         </v-col>
                     </v-row>
@@ -265,10 +261,9 @@
         }        
     });
 
-    // Reactive state
     const internalModalOpen = reactive({ value: props.isModalOpen });
 
-    const patient = reactive({
+    const patient = props.state == "new" ? {
         name: null,
         lastname: null,
         identification: null,
@@ -281,35 +276,27 @@
         email: null,
         disease: null,
         status: props.state
-    });
+    }:props.record
 
-    if (props.state !== "new") {
-        Object.assign(patient, props.record);
-    }
-
-    watch(() => props.record, (newRecord) => {
-        if (props.state !== "new") {
-            Object.assign(patient, newRecord);
-        }
-    });
+    const data = reactive({
+        ...patient,
+    })
 
     const emit = defineEmits(['save', 'close']);
 
     // Validation rules
     const rules = {
-        patient: {
-            name: { required },
-            lastname: { required },
-            identification: { required },
-            gender: { required },
-            phone: { required },
-            direction: { required },
-            email: { required, email },
-            disease: { required },
-        }
+        name: { required },
+        lastname: { required },
+        identification: { required },
+        gender: { required },
+        phone: { required },
+        direction: { required },
+        email: { required, email },
+        disease: { required },
     };
 
-    const v$ = useVuelidate(rules, { patient });
+    const v$ = useVuelidate(rules, data);
 
     watch(() => props.isModalOpen, (val) => {
         internalModalOpen.value = val;
@@ -319,19 +306,11 @@
     function savePatient() {
         if (v$.value.$invalid) return; // Prevent saving if invalid
         // // Emit save event with patient data
-        emit('save', { patient });
+        emit('save', data);
+        closeModal()
     }
 
-    const handleBlur = (field) => {
-        v$.value.patient[field].$touch();
-    };
-
-    const handleInput = (field) => {
-        v$.value.patient[field].$touch();
-    };
-
     function closeModal() {
-        internalModalOpen.value = false;
         emit('close');
     }
 </script>
