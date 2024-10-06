@@ -48,7 +48,6 @@
                                         variant="outlined"
                                         density="compact"
                                         prepend-inner-icon="mdi-gender-male"
-                                        return-object
                                     ></v-select>
                                 </v-col>
                             </v-row>
@@ -81,6 +80,7 @@
                                     <v-btn
                                         prepend-icon="mdi-cloud-search"
                                         color="blue-accent-2"
+                                        @click="getDoctorPatients({page: 1, itemsPerPage})"
                                     >
                                         Search
                                     </v-btn>
@@ -94,7 +94,7 @@
                 <v-divider></v-divider>
             </v-row>
             <v-row>
-                <v-card class="pa-md-3 elevation-1" style="width: 100%;">
+                <v-card class="pa-md-3 elevation-1">
                     <div class="table-container">
                         <v-data-table-server
                             v-model:items-per-page="itemsPerPage"
@@ -106,8 +106,7 @@
                             :search="search"
                             item-value="patient"
                             @update:options="getDoctorPatients"
-                            fixed-header="true"
-                            width="4000 px"
+                            fixed-header
                         >
                             <template v-slot:item="{ item }">
                                 <tr>
@@ -212,17 +211,17 @@
                 }
             ],
             columns: [
-                {title: "Patient", key: "patient", align: 'center', width: '500px', sortable: false},
-                {title: "Identification", key: 'identification', align: 'center', width: '200px', sortable: false},
-                {title: "Age", key: 'age', align: 'center', width: '100px', sortable: false},
-                {title: "Weight (Kg)", key: 'weight', align: 'center', width: '150px', sortable: false},
-                {title: "Height (m)", key: 'height', align: 'center', width: '150px', sortable: false},
-                {title: "Gender", key: 'gender', align: 'center', width: '150px', sortable: false},
-                {title: "Phone Number", key: 'phone', align: 'center', width: '200px', sortable: false},
-                {title: "Direction", key: 'direction', align: 'center', width: '300px', sortable: false},
-                {title: "E-Mail", key: 'email', align: 'center', width: '200px', sortable: false},
-                {title: "Disease", key: 'disease', align: 'center', width: '300px', sortable: false},
-                {title: "", key: 'actions', align: 'center', width: '150px', sortable: false}
+                {title: "Patient", key: "patient", align: 'center', sortable: false, width:"400px"},
+                {title: "Identification", key: 'identification', align: 'center', sortable: false, width:"200px"},
+                {title: "Age", key: 'age', align: 'center', sortable: false, width:"125px"},
+                {title: "Weight (Kg)", key: 'weight', align: 'center', sortable: false, width:"125px"},
+                {title: "Height (m)", key: 'height', align: 'center', sortable: false, width:"125px"},
+                {title: "Gender", key: 'gender', align: 'center', sortable: false, width:"125px"},
+                {title: "Phone Number", key: 'phone', align: 'center', sortable: false, width:"150px"},
+                {title: "Direction", key: 'direction', align: 'center', sortable: false, width:"200px"},
+                {title: "E-Mail", key: 'email', align: 'center', sortable: false, width:"200px"},
+                {title: "Disease", key: 'disease', align: 'center', sortable: false, width:"200px"},
+                {title: "Actions", key: 'actions', align: 'center', sortable: false, width:"125px"}
             ],
             genders: [
                 { label: 'Male', value: 'M' },
@@ -253,7 +252,13 @@
         methods: {
             async getDoctorPatients({ page, itemsPerPage }){
                 try {
-                    const response = await patientsService.getPatientsByDoctorId(this.userInfo.user_id, page - 1, itemsPerPage);
+                    const search = {
+                        identification: this.identification,
+                        patient: this.patient,
+                        gender: this.gender,
+                        doctor_id: this.userInfo.user_id
+                    }
+                    const response = await patientsService.getPatientsByDoctorId(search, page - 1, itemsPerPage);
                     if (!response.success) {
                         this.$emit('notify', {message: response.message, ok: response.success, show: true});
                     } else {
@@ -283,6 +288,10 @@
                         const patient = patientData
                         patient.doctorId = this.userInfo.user_id
                         if(patient.status == "new"){
+                            const found_patient = this.patients.find(p => p.identification === patient.identification);
+                            if(found_patient){
+                                return null
+                            }
                             this.patients.push({
                                 patient_id: patient.patient_id,
                                 name: patient.name,
