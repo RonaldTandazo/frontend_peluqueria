@@ -1,10 +1,10 @@
 <template>
     <v-app>
-        <ToolBar pageTitle="Patients Dashboard"></ToolBar>
+        <ToolBar pageTitle="Patients List"></ToolBar>
         <v-container>
             <v-row>
                 <v-col cols="12" class="d-flex justify-start">
-                    <h2 class="text-h4">Patients List</h2>
+                    <h2 class="text-h5">Patients List</h2>
                 </v-col>
             </v-row>
             <v-row>
@@ -208,6 +208,11 @@
                     title: 'Patients Dashboard',
                     disabled: true,
                     href: '/patients'
+                },
+                {
+                    title: 'Patients List',
+                    disabled: true,
+                    href: '/patients/list'
                 }
             ],
             columns: [

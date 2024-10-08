@@ -13,7 +13,8 @@
         }),
         props: {
             routes:{
-                type: String
+                type: Array,
+                required: true
             }
         }
     };

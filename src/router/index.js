@@ -8,6 +8,7 @@ import ResetPasswordForm from "@/components/ResetPasswordForm.vue";
 import SuccessComponent from "@/components/SuccessComponent.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
 import UserPage from "@/views/UserPage.vue";
+import PatientsDashboard from "@/views/PatientsDashboard.vue";
 import PatientsPage from "@/views/PatientsPage.vue";
 
 const routes = [
@@ -72,8 +73,15 @@ const routes = [
   },
   {
     path: "/patients",
-    component: PatientsPage,
-    meta: { requiresAuth: true }
+    component: PatientsDashboard,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "list",
+        name: "PatientsPage",
+        component: PatientsPage
+      }
+    ]
   },
   {
     path: "/:pathMatch(.*)*",
