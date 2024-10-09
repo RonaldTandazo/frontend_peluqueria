@@ -1,15 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomePage from "../views/HomePage.vue";
-import LoginForm from "../components/LoginForm.vue";
-import SignUpForm from "../components/SignUpForm.vue";
-import RecoveryPage from "@/views/RecoveryPage.vue";
-import RecoveryForm from "../components/RecoveryForm.vue";
-import ResetPasswordForm from "@/components/ResetPasswordForm.vue";
-import SuccessComponent from "@/components/SuccessComponent.vue";
+import HomePage from "../views/Authentication/AuthenticationPage.vue";
+import LoginForm from "../components/Authentication/LoginForm.vue";
+import SignUpForm from "../components/Authentication/SignUpForm.vue";
+import RecoveryPage from "@/views/Recovery/RecoveryPage.vue";
+import RecoveryForm from "../components/Authentication/RecoveryForm.vue";
+import ResetPasswordForm from "@/components/Authentication/ResetPasswordForm.vue";
+import SuccessComponent from "@/components/General/SuccessComponent.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
-import UserPage from "@/views/UserPage.vue";
-import PatientsDashboard from "@/views/PatientsDashboard.vue";
-import PatientsPage from "@/views/PatientsPage.vue";
+import UserPage from "@/views/User/UserPage.vue";
+import PatientsDashboard from "@/views/Patients/PatientsDashboard.vue";
+import PatientsList from "@/views/Patients/PatientsList.vue";
+import ScheduleAppoinment from "@/views/Patients/ScheduleAppoinment.vue";
 
 const routes = [
   {
@@ -75,13 +76,16 @@ const routes = [
     path: "/patients",
     component: PatientsDashboard,
     meta: { requiresAuth: true },
-    children: [
-      {
-        path: "list",
-        name: "PatientsPage",
-        component: PatientsPage
-      }
-    ]
+  },
+  {
+    path: "/patients/list",
+    component: PatientsList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/patients/schedule_appoinment",
+    component: ScheduleAppoinment,
+    meta: { requiresAuth: true },
   },
   {
     path: "/:pathMatch(.*)*",

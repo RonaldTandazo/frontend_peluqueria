@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import ToolBar from '../components/ToolBar.vue';
+    import ToolBar from '../components/General/ToolBar.vue';
     
     export default {
         name: 'DashboardPage',

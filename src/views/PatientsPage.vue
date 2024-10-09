@@ -179,9 +179,9 @@
 </template>
 
 <script>
-    import ToolBar from '../components/ToolBar.vue';
-    import AdaptativeBreadcrumbs from '../components/AdaptativeBreadcrumbs.vue';
-    import PatientModal from '../components/PatientModal.vue';
+    import ToolBar from '../components/General/ToolBar.vue';
+    import AdaptativeBreadcrumbs from '../components/General/AdaptativeBreadcrumbs.vue';
+    import PatientModal from '../components/Patients/PatientModal.vue';
     import { jwtDecode } from 'jwt-decode';
     import { patientsService } from "../services/patientsService";
 
@@ -206,7 +206,7 @@
                 },
                 {
                     title: 'Patients Dashboard',
-                    disabled: true,
+                    disabled: false,
                     href: '/patients'
                 },
                 {
