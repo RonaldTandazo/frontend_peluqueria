@@ -47,7 +47,8 @@ import {
     VDialog,
     VTextarea,
     VTooltip,
-    VCardTitle
+    VCardTitle,
+    VChip
 } from 'vuetify/components';
 import { VCalendar } from 'vuetify/lib/labs/components.mjs';
 
@@ -99,7 +100,8 @@ export default createVuetify({
         VTextarea,
         VTooltip,
         VCardTitle,
-        VCalendar
+        VCalendar,
+        VChip
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto
