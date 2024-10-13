@@ -4,7 +4,7 @@
         <v-container>
             <v-row>
                 <v-col cols="12" class="d-flex justify-start">
-                    <h2 class="text-h5">Patients List</h2>
+                    <h2 class="text-h4">Patients List</h2>
                 </v-col>
             </v-row>
             <v-row>
