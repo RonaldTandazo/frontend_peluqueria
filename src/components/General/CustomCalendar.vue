@@ -1,53 +1,73 @@
 <template>
-    <div class="calendar">
-        <div class="calendar-header">
-            <v-btn @click="prevMonth" icon="mdi-chevron-left" elevation="4" variant="solo" density="comfortable"></v-btn>
-            <h2 class="text-h5">{{ currentMonthName }} {{ currentYear }}</h2>
-            <v-btn @click="nextMonth" icon="mdi-chevron-right" elevation="4" variant="solo" density="comfortable"></v-btn>
-        </div>
-
-        <div class="calendar-grid">
-            <div class="day-name week-day" v-for="(day, index) in dayNames" :key="index">{{ day }}</div>
-            <div
-                class="calendar-day"
-                v-for="(date, index) in daysInMonth"
-                :key="index"
-                :class="{ 'is-today': isToday(date), 'is-selected': isSelected(date) }"
-                @click="selectDate(date)"
-            >
+    <div>
+        <v-row>
+            <v-col cols="6" class="d-flex justify-start">
                 <v-btn
-                    v-if="date != null"
-                    variant="text"
-                    class="date-btn"
-                    border
-                    rounded
+                    prepend-icon="mdi-calendar-plus-outline"
+                    color="white"
+                    class="me-2"
+                    ref="modalBtn"
+                    @click="isModalOpen = true; state='new'"
                 >
-                <span class="text-body-2">{{ date.getDate() }}</span>
+                    New Appointment
                 </v-btn>
-                <div v-if="date != null && hasEvents(date)">
-                    <template v-for="event in getEventsForDate(date)" 
-                        :key="event.id"
-                    >
-                        <ul>
-                            <li
-                                :key="event.id"
-                                @click.stop="selectEvent(event)"
-                            >
-                                <v-chip elevation="2" class="event cursor-pointer" :style="{ '--chip-hover-color': event.importance }">
-                                    <v-icon :color="event.importance" class="me-2">mdi-alert-circle</v-icon>
-                                    {{ event.title }}
-                                </v-chip>
-                            </li>
-                        </ul>
-                    </template>
+            </v-col>
+        </v-row>
+        <v-row class="py-md-5">
+            <v-divider></v-divider>
+        </v-row>
+        <div class="calendar">
+            <div class="calendar-header">
+                <v-btn @click="prevMonth" icon="mdi-chevron-left" elevation="4" variant="solo" density="comfortable"></v-btn>
+                <h2 class="text-h5">{{ currentMonthName }} {{ currentYear }}</h2>
+                <v-btn @click="nextMonth" icon="mdi-chevron-right" elevation="4" variant="solo" density="comfortable"></v-btn>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="day-name week-day" v-for="(day, index) in dayNames" :key="index">{{ day }}</div>
+                <div
+                    class="calendar-day"
+                    v-for="(date, index) in daysInMonth"
+                    :key="index"
+                    :class="{ 'is-today': isToday(date), 'is-selected': isSelected(date) }"
+                    @click="selectDate(date)"
+                >
+                    <span v-if="date != null" class="text-body-2">{{ date.getDate() }}</span>
+                    <div v-if="date != null && hasEvents(date)">
+                        <template v-for="event in getEventsForDate(date)" 
+                            :key="event.id"
+                        >
+                            <ul>
+                                <li
+                                    :key="event.id"
+                                    @click.stop="selectEvent(event)"
+                                >
+                                    <v-chip elevation="2" class="event cursor-pointer" :style="{ '--chip-hover-color': event.importance }"
+                                        density="compact" 
+                                    >
+                                        <v-icon :color="event.importance" class="me-2">mdi-alert-circle</v-icon>
+                                        {{ event.title }}
+                                    </v-chip>
+                                </li>
+                            </ul>
+                        </template>
+                    </div>
                 </div>
             </div>
+            <v-dialog v-model="isModalOpen" max-width="600px">
+                <EventModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
+            </v-dialog>
         </div>
     </div>
 </template>
   
 <script>
+    import EventModal from "../../components/Patients/EventModal.vue";
     export default {
+        name: 'CustomCalendar',
+        components: {
+            EventModal
+        },
         data() {
             return {
                 currentDate: new Date(),
@@ -90,6 +110,8 @@
                         importance: "#00C853"
                     }
                 ],
+                state: 'new',
+                isModalOpen: false
             };
         },
         computed: {
@@ -175,6 +197,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding-top: 1.5%;
     }
     .calendar-header {
         display: flex;

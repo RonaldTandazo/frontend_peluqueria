@@ -50,7 +50,7 @@ import {
     VCardTitle,
     VChip
 } from 'vuetify/components';
-import { VCalendar } from 'vuetify/lib/labs/components.mjs';
+import { VCalendar, VTimePicker } from 'vuetify/lib/labs/components.mjs';
 
 export default createVuetify({
     components: {
@@ -101,7 +101,8 @@ export default createVuetify({
         VTooltip,
         VCardTitle,
         VCalendar,
-        VChip
+        VChip,
+        VTimePicker
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto
