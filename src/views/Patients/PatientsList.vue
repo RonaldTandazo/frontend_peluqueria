@@ -62,10 +62,6 @@
                                     >
                                         New Patient
                                     </v-btn>
-
-                                    <v-dialog v-model="isModalOpen" max-width="600px">
-                                        <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
-                                    </v-dialog>
                                 </v-col>
                                 <v-spacer></v-spacer>
                                 <v-col cols="6" class="d-flex justify-end">
@@ -146,9 +142,6 @@
                                                             activator="parent"
                                                             location="top"
                                                         >Edit Information</v-tooltip>
-                                                        <v-dialog v-model="isModalOpen" max-width="600px">
-                                                            <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
-                                                        </v-dialog>
                                                     </v-list-item-title>
                                                     <v-divider class="my-2"></v-divider>
                                                     <v-list-item-title>
@@ -175,6 +168,9 @@
                 </v-card>
             </v-row>
         </v-container>
+        <v-dialog v-model="isModalOpen" max-width="600px">
+            <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
+        </v-dialog>
     </v-app>
 </template>
 

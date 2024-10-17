@@ -43,7 +43,7 @@
                                     @click.stop="selectEvent(event)"
                                 >
                                     <v-chip elevation="2" class="event cursor-pointer" :style="{ '--chip-hover-color': event.importance }"
-                                        density="compact" 
+                                        density="compact" @click="isModalOpen = true; state='edit'; record=event"
                                     >
                                         <v-icon :color="event.importance" class="me-2">mdi-alert-circle</v-icon>
                                         {{ event.title }}
@@ -55,7 +55,7 @@
                 </div>
             </div>
             <v-dialog v-model="isModalOpen" max-width="600px">
-                <EventModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
+                <EventModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveAppointment" :state="state" :record="record"/>
             </v-dialog>
         </div>
     </div>
@@ -78,8 +78,8 @@
                         title: "Event 1", 
                         description: "Description 1", 
                         date: new Date(2024,9,1), 
-                        start: "9:45 am", 
-                        end: "10:30 am",
+                        start: "08:00", 
+                        end: "09:00",
                         importance: "#D50000"
                     },
                     {
@@ -87,8 +87,8 @@
                         title: "Event 2", 
                         description: "Description 2", 
                         date: new Date(2024,9,1), 
-                        start: "9:45 am", 
-                        end: "10:30 am",
+                        start: "10:00", 
+                        end: "10:30",
                         importance: "#FF6D00"
                     },
                     {
@@ -96,8 +96,8 @@
                         title: "Event 3", 
                         description: "Description 3", 
                         date: new Date(2024,9,1), 
-                        start: "9:45 am", 
-                        end: "10:30 am",
+                        start: "00:00", 
+                        end: "01:00",
                         importance: "#2962FF"
                     },
                     {
@@ -105,8 +105,8 @@
                         title: "Event 4", 
                         description: "Description 4", 
                         date: new Date(2024,9,1), 
-                        start: "9:45 am", 
-                        end: "10:30 am",
+                        start: "15:15", 
+                        end: "15:30",
                         importance: "#00C853"
                     }
                 ],
@@ -136,7 +136,6 @@
                 const firstDay = new Date(year, month, 1).getDay();
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-                // Agregar los días vacíos antes del primer día
                 for (let i = 0; i < firstDay; i++) {
                     days.push(null);
                 }
@@ -146,7 +145,6 @@
                     days.push(new Date(year, month, i));
                 }
 
-                // Filtrar solo los días que no son nulos
                 return days
             }
         },
@@ -175,7 +173,7 @@
             },
             selectDate(date) {
                 this.selectedDate = date;
-                this.$emit('date-selected', date); // Acción al seleccionar fecha
+                this.$emit('date-selected', date);
             },
             getEventsForDate(date) {
                 return this.events.filter(
@@ -183,10 +181,51 @@
                 );
             },
             selectEvent(event) {
-                this.$emit('event-selected', event); // Acción al seleccionar evento
+                this.$emit('event-selected', event);
             },
             hasEvents(day) {
                 return this.getEventsForDate(day).length > 0;
+            },
+
+            async saveAppointment(appointmentData){
+                try{
+                    if(appointmentData != null){
+                        const appointment = appointmentData
+                        const [year, month, day] = appointment.date.split('-');
+
+                        if(appointment.status == "new"){
+                            const found_appointment = this.events.find(e => e.id === appointment.id);
+                            if(found_appointment){
+                                return null
+                            }
+                            this.events.push({
+                                id: appointment.id,
+                                title: appointment.title,
+                                description: appointment.description,
+                                date: new Date(year, month-1, day),
+                                start: appointment.start,
+                                end: appointment.end,
+                                importance: appointment.importance,
+                            });
+                            this.totalItems += 1 
+                            
+                        }else{
+                            const found_appointment = this.events.find(e => e.id === appointment.id);
+
+                            if (found_appointment) {
+                                found_appointment.id = appointment.id,
+                                found_appointment.title = appointment.title,
+                                found_appointment.description = appointment.description,
+                                found_appointment.date = new Date(year, month-1, day),
+                                found_appointment.start = appointment.start,
+                                found_appointment.end = appointment.end,
+                                found_appointment.importance = appointment.importance
+                            }
+                        }
+                    }
+                }catch (error) {
+                    console.log(error)
+                }
             }
         },
     };
@@ -228,7 +267,6 @@
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
-        min-height: 25px;
         background-color: #258eff;
         color: white;
         position: relative;
