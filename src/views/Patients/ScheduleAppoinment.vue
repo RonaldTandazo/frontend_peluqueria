@@ -10,6 +10,89 @@
             <v-row>
                 <AdaptativeBreadcrumbs :routes="routes"></AdaptativeBreadcrumbs>
             </v-row>
+            <v-row>
+                <v-expansion-panels variant="accordion">
+                    <v-expansion-panel title="Search Filters">
+                        <v-expansion-panel-text>
+                            <v-row cols="12">
+                                <v-col cols="6">
+                                    <v-select
+                                        v-model="speciality"
+                                        clearable
+                                        :items="specialities"
+                                        item-title="label"
+                                        item-value="value"
+                                        label="Specialities"
+                                        variant="outlined"
+                                        density="compact"
+                                        prepend-inner-icon="mdi-group"
+                                        @update:model-value="getDoctorsBySpeciality"
+                                    ></v-select>
+                                </v-col>
+                                <v-col cols="6">
+                                    <v-select
+                                        v-model="doctor"
+                                        clearable
+                                        :items="doctors"
+                                        item-title="label"
+                                        item-value="value"
+                                        label="Doctor"
+                                        variant="outlined"
+                                        density="compact"
+                                        prepend-inner-icon="mdi-doctor"
+                                    ></v-select>
+                                </v-col>
+                            </v-row>
+                            <v-row cols="12">
+                                <v-col cols="6">
+                                    <v-select
+                                        v-model="month"
+                                        clearable
+                                        :items="months"
+                                        item-title="label"
+                                        item-value="value"
+                                        label="Month"
+                                        variant="outlined"
+                                        density="compact"
+                                        prepend-inner-icon="mdi-calendar-month"
+                                    ></v-select>
+                                </v-col>
+                                <v-col cols="6">
+                                    <v-text-field
+                                        v-model="year"
+                                        density="compact"
+                                        label="Year"
+                                        clearable
+                                        variant="outlined"
+                                        prepend-inner-icon="mdi-calendar-month"
+                                    >    
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row cols="12">
+                                <v-col class="d-flex justify-end">
+                                    <v-btn
+                                        prepend-icon="mdi-eraser"
+                                        color="black"
+                                        class="me-2"
+                                        @click="cleanFilters"
+                                    >
+                                        Clear
+                                    </v-btn>
+                                    <v-btn
+                                        prepend-icon="mdi-cloud-search"
+                                        color="blue-accent-2"
+                                        @click="getDoctorPatients({page: 1, itemsPerPage})"
+                                    >
+                                        Search
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-expansion-panel-text>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-row>
+            <br/>
             <v-sheet>
                 <CustomCalendar style="width: 100%;"/>
             </v-sheet>
@@ -22,6 +105,8 @@ import ToolBar from '../../components/General/ToolBar.vue';
 import AdaptativeBreadcrumbs from '../../components/General/AdaptativeBreadcrumbs.vue';
 import CustomCalendar from '../../components/General/CustomCalendar.vue';
 import { jwtDecode } from 'jwt-decode';
+import { specialityService } from "../../services/specialityService"
+import { doctorService } from "../../services/doctorService"
 
 export default {
     name: 'ScheduleAppoinment',
@@ -32,11 +117,6 @@ export default {
     },
     data: () => ({
         userInfo: null,
-        record: null,
-        state: 'new',
-        isModalOpen: false,
-        selectedDate: null,
-        selectedEvent: null,
         routes: [
             {
                 title: 'Home',
@@ -54,10 +134,12 @@ export default {
                 href: '/patients/schedule_appoinment'
             }
         ],
-        type: 'month',
-        weekday: [0, 1, 2, 3, 4, 5, 6],
-        value: [new Date()],
-        events: []
+        specialities: [],
+        doctors: [],
+        speciality: null,
+        doctor: null,
+        month: null,
+        year: null
     }),
 
     mounted() {
@@ -69,6 +151,49 @@ export default {
                 console.error('Invalid token', error);
             }
         }
-    }
+
+        this.getAllSpecialities();
+    },
+
+    methods: {
+        async getAllSpecialities(){
+            try {
+                const response = await specialityService.getAllSpecialities();
+                if (!response.success) {
+                    this.$emit('notify', {message: response.message, ok: response.success, show: true});
+                } else {
+                    this.totalItems = response.data.totalElements;
+                    this.specialities = response.data.map(speciality => ({
+                        value: speciality.id,
+                        label: speciality.description
+                    }));
+
+                    this.loading = false;
+                }
+            } catch (error) {
+                this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
+            }
+        },
+        
+        async getDoctorsBySpeciality(){
+            try{
+                const response = await doctorService.getDoctorsBySpeciality(this.speciality);
+                console.log(response)
+                if (!response.success) {
+                    this.$emit('notify', {message: response.message, ok: response.success, show: true});
+                } else {
+                    this.totalItems = response.data.totalElements;
+                    this.doctors = response.data.map(doctor => ({
+                        value: doctor.id,
+                        label: doctor.nombre
+                    }));
+
+                    this.loading = false;
+                }
+            }catch(error){
+                this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
+            }
+        }
+    },
 };
 </script>
