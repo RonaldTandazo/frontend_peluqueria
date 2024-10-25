@@ -13,9 +13,6 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row class="py-md-5">
-            <v-divider></v-divider>
-        </v-row>
         <div class="calendar">
             <div class="calendar-header">
                 <v-btn @click="prevMonth" icon="mdi-chevron-left" elevation="4" variant="solo" density="comfortable"></v-btn>
@@ -55,7 +52,16 @@
                 </div>
             </div>
             <v-dialog v-model="isModalOpen" max-width="600px">
-                <EventModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveAppointment" :state="state" :record="record"/>
+                <EventModal 
+                    v-model="isModalOpen" 
+                    @close="isModalOpen = false" 
+                    @getDoctors="getDoctorsBySpeciality"
+                    @save="saveAppointment" 
+                    :state="state" 
+                    :record="record" 
+                    :specialities="specialities"
+                    :doctors="doctors"
+                />
             </v-dialog>
         </div>
     </div>
@@ -63,23 +69,39 @@
   
 <script>
     import EventModal from "../../components/Patients/EventModal.vue";
+    import { doctorService } from '../../services/doctorService';
+    import { appointmentService } from '../../services/appointmentService';
+
     export default {
         name: 'CustomCalendar',
         components: {
             EventModal
         },
+        props: {
+            specialities: {
+                type: Array,
+                required: true
+            },
+            userInfo: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
+
                 currentDate: new Date(),
                 selectedDate: null,
                 events: [
                     {
                         id: 1, 
+                        speciality: 1,
+                        doctor: 1,
                         title: "Event 1", 
                         description: "Description 1", 
                         date: new Date(2024,9,1), 
-                        start: "08:00", 
-                        end: "09:00",
+                        start_time: "08:00", 
+                        end_time: "09:00",
                         importance: "#D50000"
                     },
                     {
@@ -111,7 +133,8 @@
                     }
                 ],
                 state: 'new',
-                isModalOpen: false
+                isModalOpen: false,
+                doctors: []
             };
         },
         computed: {
@@ -192,33 +215,43 @@
                     if(appointmentData != null){
                         const appointment = appointmentData
                         const [year, month, day] = appointment.date.split('-');
+                        appointment.patientId = this.userInfo.user_id
 
                         if(appointment.status == "new"){
                             const found_appointment = this.events.find(e => e.id === appointment.id);
                             if(found_appointment){
                                 return null
                             }
+
+                            appointment.status = 'A'
                             this.events.push({
-                                id: appointment.id,
+                                patientId: appointment.patientId,
+                                specialityId: appointment.speciality,
+                                doctorId: appointment.doctor,
                                 title: appointment.title,
                                 description: appointment.description,
                                 date: new Date(year, month-1, day),
-                                start: appointment.start,
-                                end: appointment.end,
+                                startTime: appointment.startTime,
+                                endTime: appointment.endTime,
                                 importance: appointment.importance,
                             });
                             this.totalItems += 1 
-                            
+                            console.log(appointment)
+                            const response = await appointmentService.store(appointment)
+                            console.log(response)
                         }else{
                             const found_appointment = this.events.find(e => e.id === appointment.id);
 
                             if (found_appointment) {
-                                found_appointment.id = appointment.id,
+                                found_appointment.appointmentId = appointment.appointmentId,
+                                found_appointment.patientId = appointment.patientId,
+                                found_appointment.specialityId = appointment.speciality,
+                                found_appointment.doctorId = appointment.doctor,
                                 found_appointment.title = appointment.title,
                                 found_appointment.description = appointment.description,
                                 found_appointment.date = new Date(year, month-1, day),
-                                found_appointment.start = appointment.start,
-                                found_appointment.end = appointment.end,
+                                found_appointment.startTime = appointment.startTime,
+                                found_appointment.endTime = appointment.endTime,
                                 found_appointment.importance = appointment.importance
                             }
                         }
@@ -226,8 +259,24 @@
                 }catch (error) {
                     console.log(error)
                 }
+            },
+
+            async getDoctorsBySpeciality(speciality){
+                try{
+                    const response = await doctorService.getDoctorsBySpeciality(speciality);
+                    if (!response.success) {
+                        this.$emit('notify', {message: response.message, ok: response.success, show: true});
+                    } else {
+                        this.doctors = response.data.map(doctor => ({
+                            value: doctor.id,
+                            label: doctor.nombre
+                        }));
+                    }
+                }catch(error){
+                    this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
+                }
             }
-        },
+        }
     };
 </script>
   

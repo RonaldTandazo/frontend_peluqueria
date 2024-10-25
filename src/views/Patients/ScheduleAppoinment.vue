@@ -92,10 +92,12 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </v-row>
-            <br/>
-            <v-sheet>
-                <CustomCalendar style="width: 100%;"/>
-            </v-sheet>
+            <v-row class="py-md-5">
+                <v-divider></v-divider>
+            </v-row>
+            <v-row>
+                <CustomCalendar style="width: 100%;" :specialities="specialities" :userInfo="userInfo"/>
+            </v-row>
         </v-container>
     </v-app>
 </template>
@@ -167,8 +169,6 @@ export default {
                         value: speciality.id,
                         label: speciality.description
                     }));
-
-                    this.loading = false;
                 }
             } catch (error) {
                 this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
@@ -177,8 +177,8 @@ export default {
         
         async getDoctorsBySpeciality(){
             try{
+                this.doctor = null
                 const response = await doctorService.getDoctorsBySpeciality(this.speciality);
-                console.log(response)
                 if (!response.success) {
                     this.$emit('notify', {message: response.message, ok: response.success, show: true});
                 } else {
@@ -187,8 +187,6 @@ export default {
                         value: doctor.id,
                         label: doctor.nombre
                     }));
-
-                    this.loading = false;
                 }
             }catch(error){
                 this.$emit('notify', {message: "Error While Searching", ok: false, show: true});

@@ -4,13 +4,21 @@ const store = createStore({
   state: {
     successTittle: '',
     successMessage: '',
-    successStatus: null
+    successStatus: null,
+    permissions: [],
+    menus: [],
   },
   mutations: {
     setSuccessMessage(state, payload) {
       state.successTittle = payload.tittle;
       state.successMessage = payload.message;
       state.successStatus = payload.status;
+    },
+    setPermissions(state, permissions) {
+      state.permissions = permissions;
+    },
+    setMenus(state, menus) {
+      state.menus = menus;
     }
   },
   getters: {
@@ -22,7 +30,9 @@ const store = createStore({
     },
     getSuccessStatus(state){
       return state.successStatus;
-    }
+    },
+    getPermissions: (state) => state.permissions,
+    getMenus: (state) => state.menus,
   }
 });
 

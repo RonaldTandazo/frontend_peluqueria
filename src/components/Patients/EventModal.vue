@@ -8,6 +8,39 @@
                 <v-divider></v-divider>
                 <v-card-text>
                     <v-row cols="12">
+                        <v-col cols="6">
+                            <v-select
+                                v-model="data.specialityId"
+                                :error-messages="v$.specialityId.$errors.map(e => e.$message)"
+                                clearable
+                                :items="specialities"
+                                item-title="label"
+                                item-value="value"
+                                label="Specialities"
+                                variant="outlined"
+                                density="compact"
+                                prepend-inner-icon="mdi-group"
+                                required
+                                @update:model-value="getDoctorsBySpeciality"
+                            ></v-select>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-select
+                                v-model="data.doctorId"
+                                :error-messages="v$.doctorId.$errors.map(e => e.$message)"
+                                clearable
+                                :items="doctors"
+                                item-title="label"
+                                item-value="value"
+                                label="Doctors"
+                                variant="outlined"
+                                density="compact"
+                                prepend-inner-icon="mdi-group"
+                                required
+                            ></v-select>
+                        </v-col>
+                    </v-row>
+                    <v-row cols="12">
                         <v-col cols="12">
                             <v-text-field
                                 v-model="data.title"
@@ -76,8 +109,8 @@
                         <v-col style="width: 350px; flex: 0 1 auto;">
                             <h2>Start:</h2>
                             <v-time-picker
-                                v-model="data.start"
-                                :error-messages="v$.start.$errors.map(e => e.$message)"
+                                v-model="data.startTime"
+                                :error-messages="v$.startTime.$errors.map(e => e.$message)"
                                 :max="end"
                                 format="24hr"
                                 required
@@ -86,8 +119,8 @@
                         <v-col style="width: 350px; flex: 0 1 auto;">
                             <h2>End:</h2>
                             <v-time-picker
-                                v-model="data.end"
-                                :error-messages="v$.end.$errors.map(e => e.$message)"
+                                v-model="data.endTime"
+                                :error-messages="v$.endTime.$errors.map(e => e.$message)"
                                 :min="start"
                                 format="24hr"
                                 required
@@ -137,7 +170,15 @@
         record: {
             type: Object,
             required: false
-        }        
+        },
+        specialities: {
+            type: Array,
+            required: true
+        },
+        doctors: {
+            type: Array,
+            required: true
+        }       
     });
 
     const importance = [
@@ -162,11 +203,13 @@
     const internalModalOpen = reactive({ value: props.isModalOpen });
 
     const appoinment = props.state == "new" ? {
+        specialityId: null,
+        doctorId: null,
         title: null,
         description: null,
         date: null,
-        start: null,
-        end: null,
+        startTime: null,
+        endTime: null,
         importance: null,
         status: props.state
     }:{
@@ -178,28 +221,37 @@
         ...appoinment
     })
 
-    const emit = defineEmits(['save', 'close']);
+    const emit = defineEmits(['save', 'close', 'getDoctors']);
+    props.state != 'new' ? getDoctorsBySpeciality():null;
 
     // Validation rules
     const rules = {
+        specialityId: {required },
+        doctorId: {required },
         title: { required },
         description: { required },
         date: { required },
-        start: { required },
-        end: { required },
+        startTime: { required },
+        endTime: { required },
         importance: {required }
     };
 
     const v$ = useVuelidate(rules, data);
 
+    
     watch(() => props.isModalOpen, (val) => {
         internalModalOpen.value = val;
     });
 
     // Methods
+    function getDoctorsBySpeciality(){
+        emit('getDoctors', data.specialityId)
+        props.state != 'new' ? data.doctorId = props.record.doctor:data.doctorId = null
+    }
+
     function saveAppointment() {
-        if (v$.value.$invalid) return; // Prevent saving if invalid
-        // // Emit save event with patient data
+        if (v$.value.$invalid) return;
+
         emit('save', data);
         closeModal()
     }
