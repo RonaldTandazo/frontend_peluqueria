@@ -21,6 +21,7 @@
     import ToolBar from "../../components/General/ToolBar.vue"
     import AdaptativeBreadcrumbs from "../../components/General/AdaptativeBreadcrumbs.vue"
     import DashboardCards from "../../components/General/DashboardCards.vue"
+    import { mapGetters } from 'vuex'
     
     export default {
         name: 'PatientsDashboard',
@@ -42,18 +43,23 @@
                     href: '/patients'
                 }
             ],
-            cards: [
-                {
-                    title: 'Patients List',
-                    href: 'list',
-                    icon: 'mdi-list-box'
-                },
-                {
-                    title: 'Schedule Appoinment',
-                    href: 'schedule_appoinment',
-                    icon: 'mdi-calendar-edit'
+            cards: []
+        }),
+        
+        computed: {
+            ...mapGetters(['getLocatedMenu']),
+        },
+
+        mounted() {
+            const menu = this.getLocatedMenu
+            this.cards = menu.submenus.map((submenu) => {
+                return {
+                    submenu_id: submenu.submenu_id,
+                    title: submenu.name,
+                    href: submenu.path,
+                    icon: submenu.icon,
                 }
-            ]
-        })
+            })
+        },
     }
 </script>

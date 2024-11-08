@@ -16,6 +16,7 @@
                 width="400"
                 target="_blank"
                 @click="navigateTo(card.href)"
+                v-bind:key="card.submenu_id"
                 :title="card.title"
             >
                 <template v-slot:title>
@@ -35,10 +36,10 @@
 <script>
     export default {
         props: {
-        cards: {
-            type: Array,
-            required: true
-        }
+            cards: {
+                type: Array,
+                required: true
+            }
         },
         methods: {
             navigateTo(route) {

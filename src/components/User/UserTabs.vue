@@ -143,7 +143,7 @@
     import ResetPasswordForm from '../Authentication/ResetPasswordForm.vue';
     import { jwtDecode } from "jwt-decode";
     import { userService } from "../../services/userService";
-
+    
     export default {
         components: {
             ResetPasswordForm

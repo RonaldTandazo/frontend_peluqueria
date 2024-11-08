@@ -17,8 +17,8 @@
             <v-list>
                 <v-list-item
                     v-for="item in items"
-                    :key="item.value"
-                    @click="navigateTo(item.route)"
+                    :key="item.menu_id"
+                    @click="navigateTo(item)"
                 >
                     <template v-slot:prepend>
                         <v-icon
@@ -35,6 +35,8 @@
 
 <script>
     import UserAccount from "./UserAccount.vue"
+    import { mapGetters } from 'vuex';
+    import store from "../../store/index"
 
     export default {
         name:"ToolBar",
@@ -43,31 +45,29 @@
         },
         data: () => ({
             drawer: false,
-            items: [
-                {
-                    title: 'Home',
-                    icon: "mdi-home",
-                    value: '1',
-                    route: '/home'
-                },
-                {
-                    title: 'User Information',
-                    icon: "mdi-account",
-                    value: '2',
-                    route: '/user/user_information'
-                },
-                {
-                    title: 'Patients',
-                    icon: "mdi-account-group",
-                    value: '3',
-                    route: '/patients'
-                }
-            ],
+            items: []
         }),
 
+        computed: {
+            ...mapGetters(['getPermissions', 'getMenus']),
+        },
+
+        mounted() {
+            this.items = this.getPermissions.map((menu) => {
+                return {
+                    title: menu.menu,
+                    icon: menu.icon,
+                    menu_id: menu.menu_id,
+                    route: menu.path,
+                    submenus: menu.submenus
+                }
+            })
+        },
+
         methods: {
-            navigateTo(route) {
-                this.$router.push(route);
+            navigateTo(item) {
+                store.dispatch('updatedLocatedMenu', item);                
+                this.$router.push(item.route);
                 this.drawer = false;
             }
         }
