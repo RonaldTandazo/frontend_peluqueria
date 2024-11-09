@@ -106,9 +106,9 @@
 import ToolBar from '../../components/General/ToolBar.vue';
 import AdaptativeBreadcrumbs from '../../components/General/AdaptativeBreadcrumbs.vue';
 import CustomCalendar from '../../components/General/CustomCalendar.vue';
-import { jwtDecode } from 'jwt-decode';
 import { specialityService } from "../../services/specialityService"
 import { doctorService } from "../../services/doctorService"
+import { mapGetters } from "vuex"
 
 export default {
     name: 'ScheduleAppoinment',
@@ -144,16 +144,12 @@ export default {
         year: null
     }),
 
-    mounted() {
-        const token = localStorage.getItem('jwt');
-        if (token) {
-            try {
-                this.userInfo = jwtDecode(token);
-            } catch (error) {
-                console.error('Invalid token', error);
-            }
-        }
+    computed: {
+        ...mapGetters(['getUserData']),
+    },
 
+    mounted() {
+        this.userInfo = this.getUserData,
         this.getAllSpecialities();
     },
 
@@ -191,7 +187,14 @@ export default {
             }catch(error){
                 this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
             }
-        }
-    },
+        },
+
+        cleanFilters(){
+            this.speciality = []
+            this.doctor = []
+            this.month = null
+            this.year = null
+        },
+    }
 };
 </script>

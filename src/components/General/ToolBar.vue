@@ -35,8 +35,8 @@
 
 <script>
     import UserAccount from "./UserAccount.vue"
-    import { mapGetters } from 'vuex';
     import store from "../../store/index"
+    import { mapGetters } from "vuex"
 
     export default {
         name:"ToolBar",
@@ -66,7 +66,7 @@
 
         methods: {
             navigateTo(item) {
-                store.dispatch('updatedLocatedMenu', item);                
+                store.dispatch('updateLocatedMenu', item)
                 this.$router.push(item.route);
                 this.drawer = false;
             }

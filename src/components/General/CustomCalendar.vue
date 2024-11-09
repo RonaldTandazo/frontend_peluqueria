@@ -236,9 +236,7 @@
                                 importance: appointment.importance,
                             });
                             this.totalItems += 1 
-                            console.log(appointment)
-                            const response = await appointmentService.store(appointment)
-                            console.log(response)
+                            await appointmentService.store(appointment)
                         }else{
                             const found_appointment = this.events.find(e => e.id === appointment.id);
 

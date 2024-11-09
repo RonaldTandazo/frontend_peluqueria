@@ -48,7 +48,8 @@ import {
     VTextarea,
     VTooltip,
     VCardTitle,
-    VChip
+    VChip,
+    VBreadcrumbsItem
 } from 'vuetify/components';
 import { VCalendar, VTimePicker } from 'vuetify/lib/labs/components.mjs';
 
@@ -86,6 +87,7 @@ export default createVuetify({
         VTabsWindow,
         VTabsWindowItem,
         VBreadcrumbs,
+        VBreadcrumbsItem,
         VRow,
         VCol,
         VSlider,

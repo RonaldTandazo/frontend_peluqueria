@@ -28,7 +28,7 @@
                     <v-row>
                         <v-col>
                             <v-text-field
-                            v-model="fullname"
+                            v-model="userInfo.username"
                             label="Fullname"
                             prepend-icon="mdi-badge-account"
                             variant="solo"
@@ -38,7 +38,7 @@
                         </v-col>
                         <v-col>
                             <v-text-field
-                            v-model="email"
+                            v-model="userInfo.email"
                             label="E-mail"
                             prepend-icon="mdi-email"
                             variant="solo"
@@ -50,7 +50,7 @@
                     <v-row>
                         <v-col>
                             <v-text-field
-                                v-model="identification"
+                                v-model="userInfo.identification"
                                 label="ID Card"
                                 prepend-icon="mdi-card-account-details"
                                 variant="solo"
@@ -60,7 +60,7 @@
                         </v-col>
                         <v-col>
                             <v-select
-                                v-model="selectedGender"
+                                v-model="userInfo.gender"
                                 prepend-icon="mdi-gender-male"
                                 :items="genders"
                                 item-title="label"
@@ -79,7 +79,7 @@
                                 Age
                             </div>
                             <v-slider
-                                v-model="age"
+                                v-model="userInfo.age"
                                 :min="18"
                                 :max="65"
                                 :step="1"
@@ -91,7 +91,7 @@
                         </v-col>
                         <v-col>
                             <v-text-field
-                                v-model="phonenumber"
+                                v-model="userInfo.phonenumber"
                                 prepend-icon="mdi-phone"
                                 label="Phone Number"
                                 variant="solo"
@@ -141,8 +141,8 @@
 </template>
 <script>
     import ResetPasswordForm from '../Authentication/ResetPasswordForm.vue';
-    import { jwtDecode } from "jwt-decode";
     import { userService } from "../../services/userService";
+    import { mapGetters } from 'vuex';
     
     export default {
         components: {
@@ -152,12 +152,7 @@
             tab: "1",
             disabled: true,
             isEditing: false,
-            fullname: null,
-            identification: null,
-            email: null,
-            selectedGender: null,
-            age: null,
-            phonenumber: null,
+            userInfo: {},
             genders: [
                 {
                     label: "Man",
@@ -171,21 +166,13 @@
             avatarUrl: null
         }),
        
+        computed: {
+            ...mapGetters(['getUserData']),
+        },
+
         mounted() {
-            const token = localStorage.getItem('jwt');
-            if (token) {
-                try {
-                    this.userInfo = jwtDecode(token);
-                    this.fullname = this.userInfo.username ?? this.userInfo.username;
-                    this.email = this.userInfo.sub ?? this.userInfo.sub;
-                    this.identification = this.userInfo.identification ?? this.userInfo.identification;
-                    this.selectedGender = this.userInfo.gender ?? this.userInfo.gender;
-                    this.age = this.userInfo.age ?? this.userInfo.age;
-                    this.phonenumber = this.userInfo.phonenumber ?? this.userInfo.phonenumber;
-                } catch (error) {
-                    console.error('Invalid token', error);
-                }
-            }
+            this.userInfo = this.getUserData,
+            console.log(this.userInfo.age)
         },
 
         methods: {
@@ -211,18 +198,10 @@
                 }
             },
             async updateInformation(){
-                const userData = {
-                    username: this.fullname,
-                    email: this.email,
-                    identification: this.identification,
-                    gender: this.selectedGender,
-                    age: this.age,
-                    phonenumber: this.phonenumber,
-                    avatar: this.avatarUrl
-                }
+                this.userInfo.avatar = this.avatarUrl
 
                 try{
-                    const response = await userService.update_user_information(userData);
+                    const response = await userService.update_user_information(this.userInfo);
 
                     this.$emit('notify', {message:response.message, ok:response.success, show: true});
                 }catch(error){

@@ -39,7 +39,7 @@ const store = createStore({
     updateUserData({ commit }, userData) {
       commit('setUserData', userData);
     },
-    updatedLocatedMenu({ commit }, locatedMenu) {
+    updateLocatedMenu({ commit }, locatedMenu) {
       commit('setLocatedMenu', locatedMenu);
     }
   },

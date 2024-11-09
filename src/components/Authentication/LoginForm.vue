@@ -96,6 +96,8 @@
 <script>
   import { authService } from '../../services/authService';
   import { roleService } from '../../services/roleService';
+  import { jwtDecode } from 'jwt-decode'
+  import store from "../../store/index"
 
   export default {
     data: () => ({
@@ -132,7 +134,7 @@
       }
     },
 
-    methods: {
+    methods: {      
       async get_user_roles(email) {
         try {
           const response = await roleService.get_user_roles({email: email});
@@ -160,7 +162,19 @@
           });
 
           if (response.data) {
-            localStorage.setItem('jwt', response.data.token);
+            const token = response.data.token
+            localStorage.setItem('jwt', token);
+
+            const decodedToken = jwtDecode(token);
+            const userData = decodedToken.user_data;
+            const permissions = decodedToken.permissions || [];
+            const menus = decodedToken.menus || [];
+            
+            // Llama a las acciones para actualizar el estado en Vuex
+            store.dispatch('updateUserData', userData);
+            store.dispatch('updatePermissions', permissions);
+            store.dispatch('updateMenus', menus);
+            
             this.$router.push('/home');
           }
         } catch (error) {

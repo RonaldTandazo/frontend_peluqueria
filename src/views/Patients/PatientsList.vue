@@ -178,8 +178,8 @@
     import ToolBar from '../../components/General/ToolBar.vue';
     import AdaptativeBreadcrumbs from '../../components/General/AdaptativeBreadcrumbs.vue';
     import PatientModal from '../../components/Patients/PatientModal.vue';
-    import { jwtDecode } from 'jwt-decode';
     import { patientsService } from "../../services/patientsService";
+    import { mapGetters } from 'vuex';
 
     export default {
         name: 'PatientsList',
@@ -237,22 +237,19 @@
             search: '',
         }),
 
-        mounted() {
-            const token = localStorage.getItem('jwt');
-            if (token) {
-                try {
-                    this.userInfo = jwtDecode(token);
-                } catch (error) {
-                    console.error('Invalid token', error);
-                }
-            }
+        computed: {
+            ...mapGetters(['getUserData']),
+        },
 
+        mounted() {
+            this.userInfo = this.getUserData,
             this.getDoctorPatients({ page: 1, itemsPerPage: this.itemsPerPage });
         },
 
         methods: {
             async getDoctorPatients({ page, itemsPerPage }){
                 try {
+                    console.log(this.userInfo)
                     const search = {
                         identification: this.identification,
                         patient: this.patient,

@@ -20,7 +20,7 @@
                 <v-list>
                     <v-list-item
                         prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-                        :subtitle="userInfo ? userInfo.sub:''"
+                        :subtitle="userInfo ? userInfo.email:''"
                         :title="userInfo ? userInfo.username:''"
                     >
                     </v-list-item>
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-    import { jwtDecode } from 'jwt-decode'
+    import { mapGetters } from 'vuex'
     
     export default {    
         data: () => ({
@@ -75,15 +75,12 @@
             userInfo: null
         }),
 
+        computed: {
+            ...mapGetters(['getUserData']),
+        },
+
         mounted() {
-            const token = localStorage.getItem('jwt');
-            if (token) {
-                try {
-                    this.userInfo = jwtDecode(token);
-                } catch (error) {
-                    console.error('Invalid token', error);
-                }
-            }
+            this.userInfo = this.getUserData
         },
 
         methods: {
