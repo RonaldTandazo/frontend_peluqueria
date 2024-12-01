@@ -145,7 +145,7 @@ export default {
     }),
 
     computed: {
-        ...mapGetters(['getUserData']),
+        ...mapGetters('auth', ['getUserData']),
     },
 
     mounted() {

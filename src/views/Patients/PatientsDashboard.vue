@@ -47,7 +47,7 @@
         }),
         
         computed: {
-            ...mapGetters(['getLocatedMenu']),
+            ...mapGetters('location', ['getLocatedMenu']),
         },
 
         mounted() {

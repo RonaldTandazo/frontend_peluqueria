@@ -6,7 +6,7 @@
             <v-toolbar color="blue-accent-2">
                 <v-app-bar-nav-icon density="comfortable" class="ms-3" @click.stop="drawer = !drawer" variant="text"></v-app-bar-nav-icon>
                 <v-spacer></v-spacer>
-                <UserAccount class="mr-5"/>
+                <UserActions class="mr-5"/>
             </v-toolbar>
         </v-app-bar>
         <v-navigation-drawer
@@ -34,14 +34,13 @@
 </template>
 
 <script>
-    import UserAccount from "./UserAccount.vue"
-    import store from "../../store/index"
-    import { mapGetters } from "vuex"
+    import UserActions from "./UserActions.vue"
+    import { mapActions, mapGetters } from "vuex"
 
     export default {
         name:"ToolBar",
         components: {
-            UserAccount
+            UserActions
         },
         data: () => ({
             drawer: false,
@@ -49,7 +48,7 @@
         }),
 
         computed: {
-            ...mapGetters(['getPermissions', 'getMenus']),
+            ...mapGetters('auth', ['getPermissions', 'getMenus']),
         },
 
         mounted() {
@@ -65,8 +64,10 @@
         },
 
         methods: {
+            ...mapActions('location', ['located']),
+
             navigateTo(item) {
-                store.dispatch('updateLocatedMenu', item)
+                this.located(item);
                 this.$router.push(item.route);
                 this.drawer = false;
             }

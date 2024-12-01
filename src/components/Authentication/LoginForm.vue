@@ -75,7 +75,7 @@
         size="large"
         variant="tonal"
         block
-        @click="login"
+        @click="onLogin"
         :disabled="!isLoginDisable"
       >
         Log In
@@ -97,7 +97,7 @@
   import { authService } from '../../services/authService';
   import { roleService } from '../../services/roleService';
   import { jwtDecode } from 'jwt-decode'
-  import store from "../../store/index"
+  import { mapActions, mapGetters } from 'vuex';
 
   export default {
     data: () => ({
@@ -111,6 +111,13 @@
       showRoles: false,
       selectedRole: null
     }),
+
+    computed: {
+      ...mapGetters('auth', ['getUserData', 'getPermissions', 'getMenus']),
+      isLoginDisable(){
+        return this.email != '' && this.password != '' && this.selectedRole != null;
+      }
+    },
 
     watch: {
       email(newEmail) {
@@ -128,13 +135,9 @@
       },
     },
 
-    computed: {
-      isLoginDisable(){
-        return this.email != '' && this.password != '' && this.selectedRole != null;
-      }
-    },
+    methods: {   
+      ...mapActions('auth', ['login', 'logout']),
 
-    methods: {      
       async get_user_roles(email) {
         try {
           const response = await roleService.get_user_roles({email: email});
@@ -151,7 +154,7 @@
         }
       },
 
-      async login() {
+      async onLogin() {
         try {
           this.disabled = true
           this.loading = true
@@ -171,10 +174,8 @@
             const menus = decodedToken.menus || [];
             
             // Llama a las acciones para actualizar el estado en Vuex
-            store.dispatch('updateUserData', userData);
-            store.dispatch('updatePermissions', permissions);
-            store.dispatch('updateMenus', menus);
-            
+            this.login({ userData, permissions, menus });
+
             this.$router.push('/home');
           }
         } catch (error) {

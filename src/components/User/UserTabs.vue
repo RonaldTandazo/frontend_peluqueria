@@ -167,12 +167,11 @@
         }),
        
         computed: {
-            ...mapGetters(['getUserData']),
+            ...mapGetters('auth', ['getUserData']),
         },
 
         mounted() {
-            this.userInfo = this.getUserData,
-            console.log(this.userInfo.age)
+            this.userInfo = this.getUserData
         },
 
         methods: {

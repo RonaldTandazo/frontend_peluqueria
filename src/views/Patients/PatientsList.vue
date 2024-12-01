@@ -238,7 +238,7 @@
         }),
 
         computed: {
-            ...mapGetters(['getUserData']),
+            ...mapGetters('auth', ['getUserData']),
         },
 
         mounted() {
@@ -249,7 +249,6 @@
         methods: {
             async getDoctorPatients({ page, itemsPerPage }){
                 try {
-                    console.log(this.userInfo)
                     const search = {
                         identification: this.identification,
                         patient: this.patient,

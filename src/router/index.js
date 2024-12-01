@@ -7,6 +7,7 @@ import RecoveryForm from "../components/Authentication/RecoveryForm.vue";
 import ResetPasswordForm from "@/components/Authentication/ResetPasswordForm.vue";
 import SuccessComponent from "@/components/General/SuccessComponent.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
+import UserDashboard from "@/views/User/UserDashboard.vue";
 import UserPage from "@/views/User/UserPage.vue";
 import PatientsDashboard from "@/views/Patients/PatientsDashboard.vue";
 import PatientsList from "@/views/Patients/PatientsList.vue";
@@ -63,14 +64,14 @@ const routes = [
   },
   {
     path: "/user",
+    component: UserDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/user/user_information",
     component: UserPage,
     meta: { requiresAuth: true },
-    children: [
-      {
-        path: "user_information",
-        name: "UserInformation"
-      },
-    ],
+    name: "UserInformation"
   },
   {
     path: "/patients",

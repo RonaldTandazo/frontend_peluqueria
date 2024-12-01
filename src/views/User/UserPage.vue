@@ -1,11 +1,11 @@
 <template>
     <v-app>
-        <ToolBar pageTitle="Edit Profile"></ToolBar>
+        <ToolBar pageTitle="Account Information"></ToolBar>
         <!-- <v-main> -->
             <v-container>
                 <v-row>
                     <v-col cols="12" class="d-flex justify-start">
-                        <h2 class="text-h5">User Information</h2>
+                        <h2 class="text-h5">Account Information</h2>
                     </v-col>
                 </v-row>
                 
@@ -48,7 +48,12 @@
                     href: '/home'
                 },
                 {
-                    title: 'User Information',
+                    title: 'Account Dashboard',
+                    disabled: false,
+                    href: '/user'
+                },
+                {
+                    title: 'Account Information',
                     disabled: true,
                     href: '/user/user_information'
                 }

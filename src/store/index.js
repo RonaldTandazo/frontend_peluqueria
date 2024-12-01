@@ -1,46 +1,22 @@
 import { createStore } from 'vuex';
+import auth from './modules/auth';
+import location from './modules/location';
 
 const store = createStore({
+  modules: {
+    auth,
+    location
+  },
   state: {
     successTittle: '',
     successMessage: '',
-    successStatus: null,
-    permissions: [],
-    menus: [],
-    userData: {},
-    locatedMenu: {}
+    successStatus: null
   },
   mutations: {
     setSuccessMessage(state, payload) {
       state.successTittle = payload.tittle;
       state.successMessage = payload.message;
       state.successStatus = payload.status;
-    },
-    setPermissions(state, permissions) {
-      state.permissions = permissions;
-    },
-    setMenus(state, menus) {
-      state.menus = menus;
-    },
-    setUserData(state, userData) {
-      state.userData = userData;
-    },
-    setLocatedMenu(state, menu) {
-      state.locatedMenu = menu;
-    }
-  },
-  actions: {
-    updatePermissions({ commit }, permissions) {
-      commit('setPermissions', permissions);
-    },
-    updateMenus({ commit }, menus) {
-      commit('setMenus', menus);
-    },
-    updateUserData({ commit }, userData) {
-      commit('setUserData', userData);
-    },
-    updateLocatedMenu({ commit }, locatedMenu) {
-      commit('setLocatedMenu', locatedMenu);
     }
   },
   getters: {
@@ -52,11 +28,7 @@ const store = createStore({
     },
     getSuccessStatus(state){
       return state.successStatus;
-    },
-    getPermissions: (state) => state.permissions,
-    getMenus: (state) => state.menus,
-    getUserData: (state) => state.userData,
-    getLocatedMenu: (state) => state.locatedMenu
+    }
   }
 });
 
