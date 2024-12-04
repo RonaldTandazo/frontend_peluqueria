@@ -106,6 +106,7 @@
                         >
                             <template v-slot:item="{ item }">
                                 <tr>
+                                    <td class="text-left">{{ item.index }}</td>
                                     <td class="text-left">{{ item.name + " "+ item.lastname }}</td>
                                     <td class="text-left">{{ item.identification }}</td>
                                     <td class="text-right">{{ item.age }}</td>
@@ -212,6 +213,7 @@
                 }
             ],
             columns: [
+                {title: "#", key: "index", align: 'center', sortable: false, width:"100px"},
                 {title: "Patient", key: "patient", align: 'center', sortable: false, width:"400px"},
                 {title: "Identification", key: 'identification', align: 'center', sortable: false, width:"200px"},
                 {title: "Age", key: 'age', align: 'center', sortable: false, width:"125px"},
@@ -260,7 +262,8 @@
                         this.$emit('notify', {message: response.message, ok: response.success, show: true});
                     } else {
                         this.totalItems = response.data.totalElements;
-                        this.patients = response.data.content.map(patient => ({
+                        this.patients = response.data.content.map((patient, index) => ({
+                            index: index + 1,
                             patient: patient.name + ' ' + patient.lastname,
                             ...patient
                         }));

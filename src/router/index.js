@@ -12,6 +12,8 @@ import UserPage from "@/views/User/UserPage.vue";
 import PatientsDashboard from "@/views/Patients/PatientsDashboard.vue";
 import PatientsList from "@/views/Patients/PatientsList.vue";
 import ScheduleAppoinment from "@/views/Patients/ScheduleAppoinment.vue";
+import MedicationsDashboard from "@/views/Medications/MedicationsDashboard.vue";
+import MedicationsList from "@/views/Medications/MedicationsList.vue";
 
 const routes = [
   {
@@ -86,6 +88,16 @@ const routes = [
   {
     path: "/patients/schedule_appoinment",
     component: ScheduleAppoinment,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/medications",
+    component: MedicationsDashboard,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/medications/list",
+    component: MedicationsList,
     meta: { requiresAuth: true },
   },
   {
