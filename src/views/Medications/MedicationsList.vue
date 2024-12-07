@@ -63,7 +63,7 @@
                 <v-divider></v-divider>
             </v-row>
             <v-row>
-                <v-card class="pa-md-3 elevation-1">
+                <v-card class="pa-md-3 elevation-1" width="100%">
                     <div class="table-container">
                         <v-data-table-server
                             v-model:items-per-page="itemsPerPage"
@@ -157,36 +157,36 @@
                 {title: '', key: 'data-table-expand' },
                 {title: "#", key: "index", align: 'center', sortable: false, width:"100px"},
                 {title: "Medication", key: "medication", align: 'center', sortable: false, width:"300px"},
-                {title: "Description", key: 'description', align: 'center', sortable: false, width:"300px"},
+                {title: "Type", key: 'type', align: 'center', sortable: false, width:"300px"},
                 {title: "Diseases", key: 'diseases', align: 'center', sortable: false, width:"600px"}
             ],
             nestedColumns: [
                 { title: "#", key: "index", align: "center", sortable: false },
-                { title: "Gramaje", key: "gramaje", align: "center", sortable: false },
-                { title: "Precio", key: "precio", align: "center", sortable: false },
+                { title: "Grams", key: "grams", align: "center", sortable: false },
+                { title: "Price", key: "price", align: "center", sortable: false },
             ],
             loading: false,
             medications: [
                 {
                     index: 1,
                     medication: "Paracetamol",
-                    description: "Analgesic",
+                    type: "Analgesic",
                     diseases: "eje,eje,eje",
                     laboratories: [
                         {
                             value: 1,
                             labName: "Pfizer",
                             gramajes: [
-                                { index: 1, gramaje: "500mg", precio: "$1.10" },
-                                { index: 2, gramaje: "1000mg", precio: "$1.60" }
+                                { index: 1, grams: "500mg", price: "$1.10" },
+                                { index: 2, grams: "1000mg", price: "$1.60" }
                             ],
                         },
                         {
                             value: 2,
                             labName: "Aztraceneca",
                             gramajes: [
-                                { index: 1, gramaje: "500mg", precio: "$1.10" },
-                                { index: 2, gramaje: "1000mg", precio: "$1.60" },
+                                { index: 1, grams: "500mg", price: "$1.10" },
+                                { index: 2, grams: "1000mg", price: "$1.60" },
                             ],
                         },
                     ],

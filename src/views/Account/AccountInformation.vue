@@ -5,7 +5,7 @@
             <v-container>
                 <v-row>
                     <v-col cols="12" class="d-flex justify-start">
-                        <h2 class="text-h5">Account Information</h2>
+                        <h2 class="text-h4">Account Information</h2>
                     </v-col>
                 </v-row>
                 
@@ -32,7 +32,7 @@
     import NotificacionAlert from "../../components/General/NotificationAlert.vue";
 
     export default {
-        name: 'UserPage',
+        name: 'AccountInformation',
         components: {
             ToolBar,
             AdaptativeBreadcrumbs,

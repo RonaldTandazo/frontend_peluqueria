@@ -7,8 +7,8 @@ import RecoveryForm from "../components/Authentication/RecoveryForm.vue";
 import ResetPasswordForm from "@/components/Authentication/ResetPasswordForm.vue";
 import SuccessComponent from "@/components/General/SuccessComponent.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
-import UserDashboard from "@/views/User/UserDashboard.vue";
-import UserPage from "@/views/User/UserPage.vue";
+import AccountDashboard from "@/views/Account/AccountDashboard.vue";
+import AccountInformation from "@/views/Account/AccountInformation.vue";
 import PatientsDashboard from "@/views/Patients/PatientsDashboard.vue";
 import PatientsList from "@/views/Patients/PatientsList.vue";
 import ScheduleAppoinment from "@/views/Patients/ScheduleAppoinment.vue";
@@ -65,15 +65,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/user",
-    component: UserDashboard,
+    path: "/account",
+    component: AccountDashboard,
     meta: { requiresAuth: true }
   },
   {
-    path: "/user/user_information",
-    component: UserPage,
+    path: "/account/information",
+    component: AccountInformation,
     meta: { requiresAuth: true },
-    name: "UserInformation"
+    name: "AccountInformation"
   },
   {
     path: "/patients",
@@ -86,7 +86,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/patients/schedule_appoinment",
+    path: "/patients/schedule_appointment",
     component: ScheduleAppoinment,
     meta: { requiresAuth: true },
   },

@@ -90,7 +90,7 @@
                 <v-divider></v-divider>
             </v-row>
             <v-row>
-                <v-card class="pa-md-3 elevation-1">
+                <v-card class="pa-md-3 elevation-1" width="100%">
                     <div class="table-container">
                         <v-data-table-server
                             v-model:items-per-page="itemsPerPage"
@@ -116,7 +116,6 @@
                                     <td class="text-left">{{ item.phone }}</td>
                                     <td class="text-left">{{ item.direction }}</td>
                                     <td class="text-left">{{ item.email }}</td>
-                                    <td class="text-left">{{ item.disease }}</td>
                                     <td class="text-center">
                                         <v-menu>
                                             <template v-slot:activator="{ props }">
@@ -223,7 +222,6 @@
                 {title: "Phone Number", key: 'phone', align: 'center', sortable: false, width:"150px"},
                 {title: "Direction", key: 'direction', align: 'center', sortable: false, width:"200px"},
                 {title: "E-Mail", key: 'email', align: 'center', sortable: false, width:"200px"},
-                {title: "Disease", key: 'disease', align: 'center', sortable: false, width:"200px"},
                 {title: "Actions", key: 'actions', align: 'center', sortable: false, width:"125px"}
             ],
             genders: [
@@ -304,7 +302,6 @@
                                 phone: patient.phone,
                                 direction: patient.direction,
                                 email: patient.email,
-                                disease: patient.disease,
                             });
                             this.totalItems += 1 
                             
@@ -324,7 +321,6 @@
                                 found_patient.phone = patient.phone,
                                 found_patient.direction = patient.direction,
                                 found_patient.email = patient.email,
-                                found_patient.disease = patient.disease,
                                 found_patient.doctorId = this.userInfo.user_id
                             }
                             await patientsService.update(found_patient.patient_id, found_patient)

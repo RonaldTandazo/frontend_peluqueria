@@ -194,23 +194,6 @@
                             ></v-text-field>
                         </v-col>
                     </v-row>
-                    <v-row cols="12">
-                        <v-col cols="12">
-                            <v-textarea
-                                v-model="data.disease"
-                                :error-messages="v$.disease.$errors.map(e => e.$message)"
-                                label="Disease"
-                                prepend-inner-icon="mdi-medical-bag"
-                                density="compact"
-                                variant="outlined"
-                                rows="1"
-                                clearable
-                                counter
-                                auto-grow
-                                required
-                            ></v-textarea>
-                        </v-col>
-                    </v-row>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
@@ -274,7 +257,6 @@
         phone: null,
         direction: null,
         email: null,
-        disease: null,
         status: props.state
     }:props.record
 
@@ -292,8 +274,7 @@
         gender: { required },
         phone: { required },
         direction: { required },
-        email: { required, email },
-        disease: { required },
+        email: { required, email }
     };
 
     const v$ = useVuelidate(rules, data);

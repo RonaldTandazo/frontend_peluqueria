@@ -55,7 +55,6 @@
         item-value="role_id"
         placeholder="Select a role"
         variant="solo"
-        return-object
       ></v-select>
 
       <v-card
@@ -159,10 +158,7 @@
           this.disabled = true
           this.loading = true
           
-          const response = await authService.loginUser({
-            email: this.email,
-            password: this.password,
-          });
+          const response = await authService.loginUser({email: this.email, password: this.password, roleId: this.selectedRole});
 
           if (response.data) {
             const token = response.data.token
