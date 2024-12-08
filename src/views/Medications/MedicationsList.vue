@@ -44,12 +44,14 @@
                                         prepend-icon="mdi-eraser"
                                         color="black"
                                         class="me-2"
+                                        @click="cleanFilters"
                                     >
                                         Clear
                                     </v-btn>
                                     <v-btn
                                         prepend-icon="mdi-cloud-search"
                                         color="blue-accent-2"
+                                        @click="getMedications({page: 1, itemsPerPage})"
                                     >
                                         Search
                                     </v-btn>
@@ -63,13 +65,14 @@
                 <v-divider></v-divider>
             </v-row>
             <v-row>
-                <v-card class="pa-md-3 elevation-1" width="100%">
+                <v-card class="pa-md-3 elevation-1 bordered-table" width="100%">
                     <div class="table-container">
                         <v-data-table-server
                             v-model:items-per-page="itemsPerPage"
                             :headers="columns"
                             :items="medications"
                             :items-length="totalItems"
+                            item-value="value"
                             :loading="loading"
                             loading-text="Loading Records...Please wait"
                             fixed-header
@@ -82,27 +85,28 @@
                                             <v-tabs v-model="selectedLab" color="primary" direction="vertical" style="padding-top:15px;">
                                                 <v-tab
                                                     v-for="(lab) in item.laboratories"
-                                                    :key="lab.value"
-                                                    :value="lab.value"
+                                                    :key="lab.laboratory_id"
+                                                    :value="lab.laboratory_id"
                                                     prepend-icon="mdi-chemical-weapon"
-                                                    :text="lab.labName"
+                                                    :text="lab.laboratory"
                                                 >
                                                 </v-tab>
                                             </v-tabs>
-        
+
                                             <v-tabs-window v-model="selectedLab" class="flex-grow-1">
                                                 <v-tabs-window-item
                                                     v-for="(lab) in item.laboratories"
-                                                    :key="lab.value"
-                                                    :value="lab.value"
+                                                    :key="lab.laboratory_id"
+                                                    :value="lab.laboratory_id"
                                                 >
                                                     <v-card style="padding: 0px 20px;">
                                                         <v-data-table-virtual
                                                             :headers="nestedColumns"
-                                                            :items="lab.gramajes"
-                                                            item-value="gramaje"
+                                                            :items="lab.content"
+                                                            item-value="value"
                                                             fixed-header
-                                                        ></v-data-table-virtual>
+                                                        >
+                                                        </v-data-table-virtual>
                                                     </v-card>
                                                 </v-tabs-window-item>
                                             </v-tabs-window>
@@ -111,6 +115,7 @@
                                 </tr>
                             </template>
                         </v-data-table-server>
+
                     </div>
                 </v-card>
             </v-row>
@@ -121,6 +126,7 @@
 <script>
     import ToolBar from '../../components/General/ToolBar.vue';
     import AdaptativeBreadcrumbs from '../../components/General/AdaptativeBreadcrumbs.vue';
+    import { medicationService } from '@/services/medicationService';
 
     export default {
         name: 'MedicationsList',
@@ -131,8 +137,7 @@
         data: () => ({
             record: null,
             selectedLab: 0,
-            expanded: [],
-
+            medication: null,
             state: 'new',
             isModalOpen: false,
             itemsPerPage: 5,
@@ -155,7 +160,7 @@
             ],
             columns: [
                 {title: '', key: 'data-table-expand' },
-                {title: "#", key: "index", align: 'center', sortable: false, width:"100px"},
+                {title: "#", key: 'index', align: 'center', sortable: false, width:"100px"},
                 {title: "Medication", key: "medication", align: 'center', sortable: false, width:"300px"},
                 {title: "Type", key: 'type', align: 'center', sortable: false, width:"300px"},
                 {title: "Diseases", key: 'diseases', align: 'center', sortable: false, width:"600px"}
@@ -164,42 +169,67 @@
                 { title: "#", key: "index", align: "center", sortable: false },
                 { title: "Grams", key: "grams", align: "center", sortable: false },
                 { title: "Price", key: "price", align: "center", sortable: false },
+                { title: "Unit", key: "unit", align: "center", sortable: false },
             ],
-            loading: false,
-            medications: [
-                {
-                    index: 1,
-                    medication: "Paracetamol",
-                    type: "Analgesic",
-                    diseases: "eje,eje,eje",
-                    laboratories: [
-                        {
-                            value: 1,
-                            labName: "Pfizer",
-                            gramajes: [
-                                { index: 1, grams: "500mg", price: "$1.10" },
-                                { index: 2, grams: "1000mg", price: "$1.60" }
-                            ],
-                        },
-                        {
-                            value: 2,
-                            labName: "Aztraceneca",
-                            gramajes: [
-                                { index: 1, grams: "500mg", price: "$1.10" },
-                                { index: 2, grams: "1000mg", price: "$1.60" },
-                            ],
-                        },
-                    ],
-                },
-            ],
+            loading: true,
+            medications: [],
             totalItems: 0,
             search: '',
         }),
 
         mounted() {
+            this.getMedications({ page: 1, itemsPerPage: this.itemsPerPage });
         },
 
         methods: {
+            async getMedications({ page, itemsPerPage }){
+                try {
+                    this.loading = true
+                    const search = {
+                        medication: this.medication,
+                    }
+
+                    const response = await medicationService.getMedications(search, page - 1, itemsPerPage);
+                    if (!response.success) {
+                        this.$emit('notify', {message: response.message, ok: response.success, show: true});
+                    } else {
+                        this.totalItems = response.data.pagination.totalElements;
+                        this.medications = response.data.medications.map((medication, index) => {
+                            return {
+                                index: index + 1,
+                                value: medication.medication_id,
+                                medication: medication.medication,
+                                type: medication.type,
+                                diseases: medication.diseases.join(', '),
+                                laboratories: medication.laboratories.map((laboratory) => {
+                                    return{
+                                        laboratory_id: laboratory.laboratory_id,
+                                        laboratory: laboratory.laboratory,
+                                        content: laboratory.content.map((info, index_info) => {
+                                            return{
+                                                index: index_info + 1,
+                                                value: info.medication_laboratory_id,
+                                                grams: info.grams,
+                                                price: info.price,
+                                                unit: info.unit
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        });
+
+                        console.log(this.medications)
+                    }
+                } catch (error) {
+                    this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
+                } finally {
+                    this.loading = false;
+                }
+            },
+            cleanFilters(){
+                this.medication = null
+            }
         }
     }
 </script>
