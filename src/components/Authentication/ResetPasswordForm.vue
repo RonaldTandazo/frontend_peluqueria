@@ -56,7 +56,7 @@
         size="large"
         variant="tonal"
         block
-        @click="recover_password"
+        @click="recoverPassword"
         :disabled="!isPasswordValid"
       >
         Reset
@@ -104,14 +104,14 @@ export default {
       }
     },
 
-    async recover_password() {
+    async recoverPassword() {
       try {
         const data = {
           newPassword: this.new_password,
           confirmPassword: this.confirm_password,
         };
 
-        const response = await authService.reset_password(this.token, data);
+        const response = await authService.resetPassword(this.token, data);
 
         const message = !response.success
           ? "This Link has Expired or been used"

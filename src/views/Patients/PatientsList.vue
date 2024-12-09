@@ -169,7 +169,7 @@
             </v-row>
         </v-container>
         <v-dialog v-model="isModalOpen" max-width="600px">
-            <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
+            <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="savePatientInformation" :state="state" :genders="genders" :record="record"/>
         </v-dialog>
     </v-app>
 </template>
@@ -288,7 +288,7 @@
             closeModal() {
                 this.isModalOpen = false;
             },
-            async saveNewPatient(data) {
+            async savePatientInformacion(data) {
                 console.log(data)
                 try{
                     if(data.patient != null){
@@ -314,7 +314,7 @@
                                 email: patient.email,
                             });
                             this.totalItems += 1 
-                            console.log(patient)
+
                             await patientsService.store(patient)
                         }else{
                             const found_patient = this.patients.find(p => p.identification === patient.identification);

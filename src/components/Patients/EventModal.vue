@@ -1,6 +1,6 @@
 <template>
     <v-dialog :value="internalModalOpen" max-width="55%" transition="dialog-top-transition" persistent>
-        <form @submit.prevent="saveAppointment">
+        <form @submit.prevent="saveAppointmentInformation">
             <v-card
                 prepend-icon="mdi-calendar-cursor"
                 :title="state == 'new' ? 'New Appointment':'Edit Appointment'"
@@ -211,7 +211,7 @@
         startTime: null,
         endTime: null,
         importance: null,
-        status: props.state
+        status: 'A'
     }:{
         ...props.record,
         date: props.record.date.toISOString().split('T')[0]
@@ -224,7 +224,6 @@
     const emit = defineEmits(['save', 'close', 'getDoctors']);
     props.state != 'new' ? getDoctorsBySpeciality():null;
 
-    // Validation rules
     const rules = {
         specialityId: {required },
         doctorId: {required },
@@ -243,16 +242,16 @@
         internalModalOpen.value = val;
     });
 
-    // Methods
     function getDoctorsBySpeciality(){
         emit('getDoctors', data.specialityId)
         props.state != 'new' ? data.doctorId = props.record.doctor:data.doctorId = null
     }
 
-    function saveAppointment() {
+    function saveAppointmentInformation() {
         if (v$.value.$invalid) return;
 
-        emit('save', data);
+        const save = {appoinment: data, state: props.state}
+        emit('save', save);
         closeModal()
     }
 

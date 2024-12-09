@@ -56,7 +56,7 @@
                     v-model="isModalOpen" 
                     @close="isModalOpen = false" 
                     @getDoctors="getDoctorsBySpeciality"
-                    @save="saveAppointment" 
+                    @save="saveAppointmentInformation" 
                     :state="state" 
                     :record="record" 
                     :specialities="specialities"
@@ -210,20 +210,19 @@
                 return this.getEventsForDate(day).length > 0;
             },
 
-            async saveAppointment(appointmentData){
+            async saveAppointmentInformation(data){
                 try{
-                    if(appointmentData != null){
-                        const appointment = appointmentData
+                    if(data.appointment != null){
+                        const appointment = data.appointment
                         const [year, month, day] = appointment.date.split('-');
                         appointment.patientId = this.userInfo.user_id
 
-                        if(appointment.status == "new"){
+                        if(data.state == "new"){
                             const found_appointment = this.events.find(e => e.id === appointment.id);
                             if(found_appointment){
                                 return null
                             }
 
-                            appointment.status = 'A'
                             this.events.push({
                                 patientId: appointment.patientId,
                                 specialityId: appointment.speciality,
@@ -235,6 +234,7 @@
                                 endTime: appointment.endTime,
                                 importance: appointment.importance,
                             });
+                            
                             this.totalItems += 1 
                             await appointmentService.store(appointment)
                         }else{

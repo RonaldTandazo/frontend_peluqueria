@@ -33,7 +33,7 @@
                         key="1"
                         value="1"
                         class="custom-icon"
-                        @click="edit_profile"
+                        @click="editProfile"
                     >
                         <v-list-item-title>
                             Account Information
@@ -86,7 +86,7 @@
         methods: {
             ...mapActions('auth', ['logout']),
 
-            edit_profile(){
+            editProfile(){
                 this.$router.push({ name: 'AccountInformation' });
             },
 

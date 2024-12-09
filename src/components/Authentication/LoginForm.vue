@@ -128,7 +128,7 @@
         
         this.debounceTimeout = setTimeout(() => {
           if (newEmail) {
-            this.get_user_roles(newEmail);
+            this.getUserRoles(newEmail);
           }
         }, 500);
       },
@@ -137,9 +137,9 @@
     methods: {   
       ...mapActions('auth', ['login', 'logout']),
 
-      async get_user_roles(email) {
+      async getUserRoles(email) {
         try {
-          const response = await roleService.get_user_roles({email: email});
+          const response = await roleService.getUserRoles({email: email});
 
           if(!response.success){
             this.$emit('notify', {message: response.message, ok: false, show: true});

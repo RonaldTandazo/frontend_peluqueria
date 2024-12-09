@@ -1,6 +1,6 @@
 <template>
     <v-dialog :value="internalModalOpen" max-width="55%" transition="dialog-top-transition" persistent>
-        <form @submit.prevent="savePatient">
+        <form @submit.prevent="savePatientInformation">
             <v-card
                 prepend-icon="mdi-account-injury"
                 :title="state == 'new' ? 'New Patient':'Edit Information'"
@@ -266,7 +266,6 @@
 
     const emit = defineEmits(['save', 'close']);
 
-    // Validation rules
     const rules = {
         name: { required },
         lastname: { required },
@@ -283,10 +282,9 @@
         internalModalOpen.value = val;
     });
 
-    // Methods
-    function savePatient() {
-        if (v$.value.$invalid) return; // Prevent saving if invalid
-        // // Emit save event with patient data
+    function savePatientInformation() {
+        if (v$.value.$invalid) return;
+
         const save = {patient: data, state: props.state}
         emit('save', save);
         closeModal()
