@@ -51,7 +51,8 @@ import {
     VChip,
     VBreadcrumbsItem,
     VDataTable,
-    VDataTableVirtual
+    VDataTableVirtual,
+    VProgressLinear
 } from 'vuetify/components';
 import { VCalendar, VTimePicker } from 'vuetify/lib/labs/components.mjs';
 
@@ -108,7 +109,8 @@ export default createVuetify({
         VChip,
         VTimePicker,
         VDataTable,
-        VDataTableVirtual
+        VDataTableVirtual,
+        VProgressLinear
     },
     icons: {
         defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto

@@ -257,7 +257,7 @@
         phone: null,
         direction: null,
         email: null,
-        status: props.state
+        status: 'A'
     }:props.record
 
     const data = reactive({
@@ -287,7 +287,8 @@
     function savePatient() {
         if (v$.value.$invalid) return; // Prevent saving if invalid
         // // Emit save event with patient data
-        emit('save', data);
+        const save = {patient: data, state: props.state}
+        emit('save', save);
         closeModal()
     }
 

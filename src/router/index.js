@@ -14,6 +14,8 @@ import PatientsList from "@/views/Patients/PatientsList.vue";
 import ScheduleAppoinment from "@/views/Patients/ScheduleAppoinment.vue";
 import MedicationsDashboard from "@/views/Medications/MedicationsDashboard.vue";
 import MedicationsList from "@/views/Medications/MedicationsList.vue";
+import AccessDashboard from "@/views/Access/AccessDashboard.vue";
+import UsersAccess from "@/views/Access/UsersAccess.vue";
 
 const routes = [
   {
@@ -98,6 +100,16 @@ const routes = [
   {
     path: "/medications/list",
     component: MedicationsList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/access",
+    component: AccessDashboard,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/access/users_access",
+    component: UsersAccess,
     meta: { requiresAuth: true },
   },
   {

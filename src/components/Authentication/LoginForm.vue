@@ -169,7 +169,6 @@
             const permissions = decodedToken.permissions || [];
             const menus = decodedToken.menus || [];
             
-            // Llama a las acciones para actualizar el estado en Vuex
             this.login({ userData, permissions, menus });
 
             this.$router.push('/home');

@@ -63,7 +63,7 @@
         size="large"
         variant="tonal"
         block
-        @click="register"
+        @click="registerUser"
         :disabled="!isSingUpAvailable"
       >
         Sign Up
@@ -103,7 +103,7 @@
         
         this.debounceTimeout = setTimeout(() => {
           if (email) {
-            this.verify_email(email);
+            this.verifyEmail(email);
           }
         }, 500);
       }
@@ -116,9 +116,9 @@
     },
 
     methods: {
-      async verify_email(email){
+      async verifyEmail(email){
         try{
-          const response = await authService.verify_email({email: email})
+          const response = await authService.verifyEmail({email: email})
           if(!response.success){
             this.availableEmail = false
             this.$emit('notify', {message:response.message, ok:response.success, show: true});
@@ -132,7 +132,7 @@
         }
       },
 
-      async register() {
+      async registerUser() {
         try {
           this.disabled = true
           this.loading = true

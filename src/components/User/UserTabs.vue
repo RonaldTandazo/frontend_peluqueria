@@ -15,7 +15,20 @@
 
         <v-tabs-window v-model="tab" class="flex-grow-1">
             <v-tabs-window-item value="1">
-                <v-card flat style="padding: 0px 5px 10px 5px;">
+                <v-card 
+                    flat 
+                    style="padding: 0px 5px 10px 5px;"
+                    :disabled="loading"
+                    :loading="loading"
+                >
+                    <template v-slot:loader="{ isActive }">
+                        <v-progress-linear
+                            :active="isActive"
+                            color="blue-accent-2"
+                            height="3"
+                            indeterminate
+                        ></v-progress-linear>
+                    </template>
                     <v-row>
                         <v-col>
                             <v-avatar color="grey-darken-1" size="120" :class="disabled ? 'avatar' : 'pointer'" @click="triggerFileInput">
@@ -122,7 +135,7 @@
                                 <v-btn
                                     prepend-icon="mdi-content-save"
                                     color="blue-accent-2"
-                                    @click="updateInformation"
+                                    @click="updateUserInformation"
                                 >
                                     Save
                                 </v-btn>
@@ -152,6 +165,7 @@
             tab: "1",
             disabled: true,
             isEditing: false,
+            loading: false,
             userInfo: {},
             genders: [
                 {
@@ -182,6 +196,7 @@
             cancelEdit() {
                 this.isEditing = false;
                 this.disabled = true;
+                this.loading = false;
             },
             triggerFileInput() {
                 this.$refs.fileInput.click();
@@ -196,15 +211,18 @@
                     reader.readAsDataURL(file);
                 }
             },
-            async updateInformation(){
+            async updateUserInformation(){
                 this.userInfo.avatar = this.avatarUrl
 
                 try{
-                    const response = await userService.update_user_information(this.userInfo);
+                    this.loading = true;
+                    const response = await userService.updateUserInformation(this.userInfo);
 
                     this.$emit('notify', {message:response.message, ok:response.success, show: true});
                 }catch(error){
                     this.$emit('notify', {message:"Failed Saving", ok:false, show: true});
+                }finally{
+                    this.cancelEdit()
                 }
             }
         },  

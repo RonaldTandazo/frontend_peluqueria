@@ -1,10 +1,10 @@
 <template>
     <v-app>
-        <ToolBar pageTitle="Medications List"></ToolBar>
+        <ToolBar pageTitle="Users"></ToolBar>
         <v-container>
             <v-row>
                 <v-col cols="12" class="d-flex justify-start">
-                    <h2 class="text-h4">Medications List</h2>
+                    <h2 class="text-h4">Users</h2>
                 </v-col>
             </v-row>
             <v-row>
@@ -15,14 +15,14 @@
                     <v-expansion-panel title="Search Filters">
                         <v-expansion-panel-text>
                             <v-row cols="12">
-                                <v-col cols="12">
+                                <v-col cols="3">
                                     <v-text-field
-                                        v-model="medication"
+                                        v-model="identification"
                                         density="compact"
-                                        label="Medication"
+                                        label="Identification"
                                         clearable
                                         variant="outlined"
-                                        prepend-inner-icon="mdi-pill"
+                                        prepend-inner-icon="mdi-card-account-details"
                                     >    
                                     </v-text-field>
                                 </v-col>
@@ -34,8 +34,9 @@
                                         color="white"
                                         class="me-2"
                                         ref="modalBtn"
+                                        @click="isModalOpen = true; state='new'"
                                     >
-                                        New Medication
+                                        New User
                                     </v-btn>
                                 </v-col>
                                 <v-spacer></v-spacer>
@@ -51,7 +52,7 @@
                                     <v-btn
                                         prepend-icon="mdi-cloud-search"
                                         color="blue-accent-2"
-                                        @click="getAllMedications({page: 1, itemsPerPage})"
+                                        @click="getAllUsers({page: 1, itemsPerPage})"
                                     >
                                         Search
                                     </v-btn>
@@ -70,11 +71,12 @@
                         <v-data-table-server
                             v-model:items-per-page="itemsPerPage"
                             :headers="columns"
-                            :items="medications"
+                            :items="users"
                             :items-length="totalItems"
-                            item-value="medication_id"
+                            item-value="user_id"
                             :loading="loading"
                             loading-text="Loading Records...Please wait"
+                            no-data-text="No Users"
                             fixed-header
                             show-expand
                         >
@@ -82,62 +84,46 @@
                                 <tr>
                                     <td :colspan="columns.length">
                                         <div class="d-flex justify-center">
-                                            <v-tabs v-model="selectedLab" color="primary" direction="vertical" style="padding-top:15px;">
-                                                <v-tab
-                                                    v-for="(lab) in item.laboratories"
-                                                    :key="lab.laboratory_id"
-                                                    :value="lab.laboratory_id"
-                                                    prepend-icon="mdi-chemical-weapon"
-                                                    :text="lab.laboratory"
+                                            <v-card style="margin-top: 10px; margin-bottom: 10px; width: 75%;">
+                                                <v-data-table-virtual
+                                                    :headers="nestedColumns"
+                                                    :items="item.roles"
+                                                    item-value="role_id"
+                                                    fixed-header
+                                                    no-data-text="No User Roles"
                                                 >
-                                                </v-tab>
-                                            </v-tabs>
-
-                                            <v-tabs-window v-model="selectedLab" class="flex-grow-1">
-                                                <v-tabs-window-item
-                                                    v-for="(lab) in item.laboratories"
-                                                    :key="lab.laboratory_id"
-                                                    :value="lab.laboratory_id"
-                                                >
-                                                    <v-card style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px;">
-                                                        <v-data-table-virtual
-                                                            :headers="nestedColumns"
-                                                            :items="lab.content"
-                                                            item-value="medication_laboratory_id"
-                                                            fixed-header
-                                                        >
-                                                        </v-data-table-virtual>
-                                                    </v-card>
-                                                </v-tabs-window-item>
-                                            </v-tabs-window>
+                                                </v-data-table-virtual>
+                                            </v-card>
                                         </div>
                                     </td>
                                 </tr>
                             </template>
                         </v-data-table-server>
-
                     </div>
                 </v-card>
             </v-row>
         </v-container>
+        <v-dialog v-model="isModalOpen" max-width="600px">
+            <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
     import ToolBar from '../../components/General/ToolBar.vue';
     import AdaptativeBreadcrumbs from '../../components/General/AdaptativeBreadcrumbs.vue';
-    import { medicationService } from '@/services/medicationService';
+    import { userService } from '@/services/userService';
+    import { mapGetters } from 'vuex';
 
     export default {
-        name: 'MedicationsList',
+        name: 'UsersAccess',
         components: {
             ToolBar,
-            AdaptativeBreadcrumbs,
+            AdaptativeBreadcrumbs
         },
         data: () => ({
+            userInfo: null,
             record: null,
-            selectedLab: 0,
-            medication: null,
             state: 'new',
             isModalOpen: false,
             itemsPerPage: 5,
@@ -148,78 +134,84 @@
                     href: '/home'
                 },
                 {
-                    title: 'Medications Dashboard',
+                    title: 'Access Dashboard',
                     disabled: false,
-                    href: '/medications'
+                    href: '/access'
                 },
                 {
-                    title: 'Medications List',
+                    title: 'Users',
                     disabled: true,
-                    href: '/medications/list'
+                    href: '/access/users'
                 }
             ],
             columns: [
                 {title: '', key: 'data-table-expand' },
-                {title: "#", key: 'index', align: 'center', sortable: false, width:"100px"},
-                {title: "Medication", key: "medication", align: 'center', sortable: false, width:"300px"},
-                {title: "Type", key: 'type', align: 'center', sortable: false, width:"300px"},
-                {title: "Diseases", key: 'diseases', align: 'center', sortable: false, width:"600px"}
+                {title: "#", key: "index", align: 'center', sortable: false, width:"100px"},
+                {title: "Fullname", key: "fullname", align: 'center', sortable: false, width:"400px"},
+                {title: "Identification", key: 'identification', align: 'center', sortable: false, width:"200px"},
+                {title: "E-Mail", key: 'email', align: 'center', sortable: false, width:"200px"},
+                {title: "Phone Number", key: 'phonenumber', align: 'center', sortable: false, width:"150px"},
+                {title: "Age", key: 'age', align: 'center', sortable: false, width:"125px"},
+                {title: "Gender", key: 'gender', align: 'center', sortable: false, width:"125px"},
+                {title: "Status", key: 'status', align: 'center', sortable: false, width:"125px"},
+                {title: "Actions", key: 'actions', align: 'center', sortable: false, width:"125px"}
             ],
             nestedColumns: [
                 { title: "#", key: "index", align: "center", sortable: false },
-                { title: "Grams", key: "grams", align: "center", sortable: false },
-                { title: "Price", key: "price", align: "center", sortable: false },
-                { title: "Unit", key: "unit", align: "center", sortable: false },
+                { title: "Role", key: "role", align: "center", sortable: false },
+                { title: "Status", key: "status", align: "center", sortable: false },
+                { title: "Actions", key: "actions", align: "center", sortable: false }
             ],
+            identification: null,
             loading: true,
-            medications: [],
+            users: [],
             totalItems: 0,
             search: '',
         }),
 
+        computed: {
+            ...mapGetters('auth', ['getUserData']),
+        },
+
         mounted() {
-            this.getAllMedications({ page: 1, itemsPerPage: this.itemsPerPage });
+            this.userInfo = this.getUserData
+            this.getAllUsers({ page: 1, itemsPerPage: this.itemsPerPage });
         },
 
         methods: {
-            async getAllMedications({ page, itemsPerPage }){
+            async getAllUsers({ page, itemsPerPage }){
                 try {
                     this.loading = true
                     const search = {
-                        medication: this.medication,
+                        identification: this.identification,
                     }
 
-                    const response = await medicationService.getAllMedications(search, page - 1, itemsPerPage);
+                    const response = await userService.getAllUsers(search, page - 1, itemsPerPage);
                     if (!response.success) {
                         this.$emit('notify', {message: response.message, ok: response.success, show: true});
                     } else {
                         this.totalItems = response.data.pagination.totalElements;
-                        this.medications = response.data.medications.map((medication, index) => {
+                        this.users = response.data.users.map((user, index) => {
                             return {
                                 index: index + 1,
-                                medication_id: medication.medication_id,
-                                medication: medication.medication,
-                                type: medication.type,
-                                diseases: medication.diseases.join(', '),
-                                laboratories: medication.laboratories.map((laboratory) => {
-                                    return{
-                                        laboratory_id: laboratory.laboratory_id,
-                                        laboratory: laboratory.laboratory,
-                                        content: laboratory.content.map((info, index_info) => {
-                                            return{
-                                                index: index_info + 1,
-                                                medication_laboratory_id: info.medication_laboratory_id,
-                                                grams: info.grams,
-                                                price: info.price,
-                                                unit: info.unit
-                                            }
-                                        })
-                                    }
+                                user_id: user.user_id,
+                                fullname: user.fullname,
+                                identification: user.identification,
+                                email: user.email,
+                                phonenumber: user.phonenumber,
+                                gender: user.gender,
+                                age: user.age,
+                                status: user.status,
+                                roles: user.roles.map((role, role_index) => {
+                                    return {
+                                        index: role_index + 1,
+                                        role_id: role.role_id,
+                                        role: role.name,
+                                        status: role.status
+                                    };
                                 })
                             }
                         });
-
-                        console.log(this.medications)
                     }
                 } catch (error) {
                     this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
@@ -228,7 +220,7 @@
                 }
             },
             cleanFilters(){
-                this.medication = null
+                this.identification = null
             }
         }
     }
@@ -236,7 +228,7 @@
 
 <style scoped>
     .table-container {
-        max-height: 1000px;
+        max-height: 400px;
         overflow-y: auto;
         overflow-x: auto;
         white-space: nowrap;

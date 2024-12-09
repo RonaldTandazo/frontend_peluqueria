@@ -76,7 +76,7 @@
                                     <v-btn
                                         prepend-icon="mdi-cloud-search"
                                         color="blue-accent-2"
-                                        @click="getDoctorPatients({page: 1, itemsPerPage})"
+                                        @click="getPatientsByDoctor({page: 1, itemsPerPage})"
                                     >
                                         Search
                                     </v-btn>
@@ -100,13 +100,13 @@
                             :loading="loading"
                             loading-text="Loading Records...Please wait"
                             :search="search"
-                            item-value="patient"
+                            item-value="patient_id"
                             @update:options="getDoctorPatients"
                             fixed-header
                         >
                             <template v-slot:item="{ item }">
                                 <tr>
-                                    <td class="text-left">{{ item.index }}</td>
+                                    <td class="text-center">{{ item.index }}</td>
                                     <td class="text-left">{{ item.name + " "+ item.lastname }}</td>
                                     <td class="text-left">{{ item.identification }}</td>
                                     <td class="text-right">{{ item.age }}</td>
@@ -243,19 +243,27 @@
 
         mounted() {
             this.userInfo = this.getUserData,
-            this.getDoctorPatients({ page: 1, itemsPerPage: this.itemsPerPage });
+            this.getPatientsByDoctor({ page: 1, itemsPerPage: this.itemsPerPage });
         },
 
         methods: {
-            async getDoctorPatients({ page, itemsPerPage }){
+            async getPatientsByDoctor({ page, itemsPerPage }){
                 try {
+                    if(!this.userInfo.doctor_id){
+                        this.patients = [];
+                        this.loading = false;
+
+                        return null
+                    }
+
                     const search = {
                         identification: this.identification,
                         patient: this.patient,
                         gender: this.gender,
-                        doctor_id: this.userInfo.user_id
+                        doctorId: this.userInfo.doctor_id
                     }
-                    const response = await patientsService.getPatientsByDoctorId(search, page - 1, itemsPerPage);
+
+                    const response = await patientsService.getPatientsByDoctor(search, page - 1, itemsPerPage);
                     if (!response.success) {
                         this.$emit('notify', {message: response.message, ok: response.success, show: true});
                     } else {
@@ -280,17 +288,19 @@
             closeModal() {
                 this.isModalOpen = false;
             },
-            async saveNewPatient(patientData) {
+            async saveNewPatient(data) {
+                console.log(data)
                 try{
-                    if(patientData != null){
-                        const patient = patientData
-                        patient.doctorId = this.userInfo.user_id
-                        if(patient.status == "new"){
+                    if(data.patient != null){
+                        const patient = data.patient
+
+                        if(data.state == "new"){
                             const found_patient = this.patients.find(p => p.identification === patient.identification);
                             if(found_patient){
                                 return null
                             }
                             this.patients.push({
+                                index: this.patients.length + 1,
                                 patient_id: patient.patient_id,
                                 name: patient.name,
                                 lastname: patient.lastname,
@@ -304,13 +314,13 @@
                                 email: patient.email,
                             });
                             this.totalItems += 1 
-                            
+                            console.log(patient)
                             await patientsService.store(patient)
                         }else{
                             const found_patient = this.patients.find(p => p.identification === patient.identification);
 
                             if (found_patient) {
-                                found_patient.patient_id = patient.patient_id,
+                                found_patient.patient_id = patient.patientId,
                                 found_patient.name = patient.name,
                                 found_patient.lastname = patient.lastname,
                                 found_patient.identification = patient.identification,

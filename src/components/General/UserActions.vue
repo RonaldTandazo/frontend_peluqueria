@@ -87,7 +87,7 @@
             ...mapActions('auth', ['logout']),
 
             edit_profile(){
-                this.$router.push({ name: 'UserInformation' });
+                this.$router.push({ name: 'AccountInformation' });
             },
 
             onLogout(){
