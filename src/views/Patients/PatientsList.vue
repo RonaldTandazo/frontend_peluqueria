@@ -280,14 +280,17 @@
                     this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
                 }
             },
+            
             cleanFilters(){
                 this.patient = null
                 this.gender = null
                 this.identification = null
             },
+
             closeModal() {
                 this.isModalOpen = false;
             },
+
             async savePatientInformacion(data) {
                 console.log(data)
                 try{
