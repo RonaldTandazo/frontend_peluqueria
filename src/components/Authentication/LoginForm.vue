@@ -146,10 +146,15 @@
             return null
           }
 
-          this.roles = response.data
+          this.roles = response.data.map((role) => ({
+            role_id: role.role_id,
+            name: role.name
+          }))
+          
           this.showRoles = true
         } catch (error) {
-          this.$emit('notify', {message:"Role Search Failed", ok:false, show: true});
+          const message_error = error.response.data.message
+          this.$emit('notify', {message: message_error, ok:false, show: true});
         }
       },
 

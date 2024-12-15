@@ -80,6 +80,19 @@
                             fixed-header
                             show-expand
                         >
+                            <template v-slot:[`item.actions`]="{ item }">
+                                <v-btn icon density="compact" size="large" @click="openDialog(item, 'User')">
+                                    <v-icon color="blue-grey-darken-4">
+                                        {{ item.status === 'A' ? 'mdi-account-off' : 'mdi-account-reactivate' }}
+                                    </v-icon>
+                                    <v-tooltip
+                                        activator="parent"
+                                        location="top"
+                                    >
+                                        {{ item.status === 'A' ? 'Inactivate User' : 'Activate User' }}
+                                    </v-tooltip>
+                                </v-btn>
+                            </template>
                             <template v-slot:expanded-row="{ columns, item }">
                                 <tr>
                                     <td :colspan="columns.length">
@@ -92,6 +105,19 @@
                                                     fixed-header
                                                     no-data-text="No User Roles"
                                                 >
+                                                    <template v-slot:[`item.actions`]="{ item }">
+                                                        <v-btn icon density="compact" size="large" @click="openDialog(item, 'Role')">
+                                                            <v-icon color="blue-grey-darken-4">
+                                                                {{ item.status === 'A' ? 'mdi-account-lock' : 'mdi-account-lock-open' }}
+                                                            </v-icon>
+                                                            <v-tooltip
+                                                                activator="parent"
+                                                                location="top"
+                                                            >
+                                                                {{ item.status === 'A' ? 'Inactivate Role' : 'Activate Role' }}
+                                                            </v-tooltip>
+                                                        </v-btn>
+                                                    </template>
                                                 </v-data-table-virtual>
                                             </v-card>
                                         </div>
@@ -103,25 +129,38 @@
                 </v-card>
             </v-row>
         </v-container>
-        <v-dialog v-model="isModalOpen" max-width="600px">
-            <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveNewPatient" :state="state" :genders="genders" :record="record"/>
+        <v-dialog v-model="dialogInactivate" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h6">Are you sure to {{ record_state }} this {{ source }}?</v-card-title>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue-darken-1" variant="text" @click="closeDialog">Cancel</v-btn>
+                    <v-btn color="blue-darken-1" variant="text" @click="inactivate">OK</v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
         </v-dialog>
+        <NotificationAlert :info="notificationMessage" v-if="showNotification" />
     </v-app>
 </template>
 
-<script>
+<script lang="jsx">
     import ToolBar from '../../components/General/ToolBar.vue';
     import AdaptativeBreadcrumbs from '../../components/General/AdaptativeBreadcrumbs.vue';
+    import NotificationAlert from '../../components/General/NotificationAlert.vue';
     import { userService } from '@/services/userService';
+    import { userRoleService } from '@/services/userRoleService';
     import { mapGetters } from 'vuex';
 
     export default {
         name: 'UsersAccess',
         components: {
             ToolBar,
-            AdaptativeBreadcrumbs
+            AdaptativeBreadcrumbs,
+            NotificationAlert
         },
         data: () => ({
+            dialogInactivate: false,
             userInfo: null,
             record: null,
             state: 'new',
@@ -167,7 +206,19 @@
             users: [],
             totalItems: 0,
             search: '',
+            itemIndex: -1,
+            item: {},
+            source: "",
+            record_state: "",
+            showNotification: false,
+            notificationMessage: {},
         }),
+
+        watch: {
+            dialogInactivate (val) {
+                val || this.closeDialog()
+            },
+        },
 
         computed: {
             ...mapGetters('auth', ['getUserData']),
@@ -191,27 +242,24 @@
                         this.$emit('notify', {message: response.message, ok: response.success, show: true});
                     } else {
                         this.totalItems = response.data.pagination.totalElements;
-                        this.users = response.data.users.map((user, index) => {
-                            return {
-                                index: index + 1,
-                                user_id: user.user_id,
-                                fullname: user.fullname,
-                                identification: user.identification,
-                                email: user.email,
-                                phonenumber: user.phonenumber,
-                                gender: user.gender,
-                                age: user.age,
-                                status: user.status,
-                                roles: user.roles.map((role, role_index) => {
-                                    return {
-                                        index: role_index + 1,
-                                        role_id: role.role_id,
-                                        role: role.name,
-                                        status: role.status
-                                    };
-                                })
-                            }
-                        });
+                        this.users = response.data.users.map((user, index) => ({
+                            index: index + 1,
+                            user_id: user.user_id,
+                            fullname: user.fullname,
+                            identification: user.identification,
+                            email: user.email,
+                            phonenumber: user.phonenumber,
+                            gender: user.gender,
+                            age: user.age,
+                            status: user.status,
+                            roles: user.roles.map((role, role_index) => ({
+                                index: role_index + 1,
+                                user_role_id: role.user_role_id,
+                                user_id: user.user_id, 
+                                role: role.name,
+                                status: role.status
+                            }))
+                        }))
                     }
                 } catch (error) {
                     this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
@@ -221,6 +269,62 @@
             },
             cleanFilters(){
                 this.identification = null
+            },
+            openDialog(item, source) {
+                this.item = item
+                this.dialogInactivate = true
+                this.source = source
+                this.record_state = this.item.status == 'A' ? 'Inactivate':'Activate'
+            },
+            async inactivate() {
+                try{
+                    let response = null                    
+                    if(this.source == 'User'){
+                        const user = this.users.find(u => u.user_id === this.item.user_id);
+                        response = await userService.userActivationControl(user.user_id, this.record_state);
+                        
+                        if(user){
+                            user.status = this.record_state == 'Inactivate' ? 'I':'A'
+                        }
+                    }
+                    
+                    if(this.source == 'Role'){
+                        const { user_id, user_role_id } = this.item;
+                        const user = this.users.find(u => u.user_id === user_id);
+    
+                        if(user){
+                            const role = user.roles.find(r => r.user_role_id === user_role_id);
+                            if (role) {
+                                response = await userRoleService.roleActivationControl(user_role_id, this.record_state);
+                                role.status = this.record_state == 'Inactivate' ? 'I':'A'
+                            }
+                        }
+                    }
+
+                    this.notificationMessage = {
+                        message:response.message, 
+                        ok:true, 
+                        show: true
+                    }
+                }catch(error){
+                    this.notificationMessage = {
+                        message:error.response.data.message, 
+                        ok:false, 
+                        show: true
+                    }
+                }finally{
+                    this.closeDialog()
+                    this.triggerNotification()
+                }
+            },
+            closeDialog() {
+                this.dialogInactivate = false
+            },
+            triggerNotification() {
+                this.showNotification = true;
+                setTimeout(() => {
+                    this.showNotification = false;
+                }, 3000);
             }
         }
     }

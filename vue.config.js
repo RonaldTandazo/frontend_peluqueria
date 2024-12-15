@@ -12,4 +12,16 @@ module.exports = defineConfig({
       },
     },
   },
+  configureWebpack: {
+    module: {
+      rules: [
+        {
+          test: /\.(jsx|js)$/,
+          use: {
+            loader: 'babel-loader',
+          },
+        },
+      ],
+    },
+  },
 })

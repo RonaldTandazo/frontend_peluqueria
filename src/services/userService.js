@@ -15,5 +15,10 @@ export const userService = {
             size: size 
         }})
         return response
+    },
+
+    async userActivationControl(user_id, state){
+        const response = await axios.put(`${API_URL}/user/user_activation_control/${user_id}`, null, {params: { state: state }})
+        return response
     }
 };
