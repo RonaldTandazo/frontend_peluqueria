@@ -211,7 +211,7 @@
             source: "",
             record_state: "",
             showNotification: false,
-            notificationMessage: {},
+            notificationMessage: {}
         }),
 
         watch: {
@@ -277,6 +277,8 @@
                 this.record_state = this.item.status == 'A' ? 'Inactivate':'Activate'
             },
             async inactivate() {
+                this.closeDialog()
+                this.loading = true
                 try{
                     let response = null                    
                     if(this.source == 'User'){
@@ -313,7 +315,7 @@
                         show: true
                     }
                 }finally{
-                    this.closeDialog()
+                    this.loading = false
                     this.triggerNotification()
                 }
             },

@@ -286,6 +286,7 @@
         if (v$.value.$invalid) return;
 
         const save = {patient: data, state: props.state}
+        console.log(save)
         emit('save', save);
         closeModal()
     }

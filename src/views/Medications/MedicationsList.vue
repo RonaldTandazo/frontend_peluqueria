@@ -78,6 +78,15 @@
                             fixed-header
                             show-expand
                         >
+                            <template v-slot:[`item.diseases`]="{ item }">
+                                <div class="d-flex flex-wrap justify-center">
+                                    <template v-for="(disease, index) in item.diseases" :key="index">
+                                        <v-chip class="mx-1 my-1" color="green">
+                                            {{ disease }}
+                                        </v-chip>
+                                    </template>
+                                </div>
+                            </template>
                             <template v-slot:expanded-row="{ columns, item }">
                                 <tr>
                                     <td :colspan="columns.length">
@@ -200,7 +209,7 @@
                                 medication_id: medication.medication_id,
                                 medication: medication.medication,
                                 type: medication.type,
-                                diseases: medication.diseases.join(', '),
+                                diseases: medication.diseases,
                                 laboratories: medication.laboratories.map((laboratory) => {
                                     return{
                                         laboratory_id: laboratory.laboratory_id,

@@ -171,6 +171,7 @@
         <v-dialog v-model="isModalOpen" max-width="600px">
             <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="savePatientInformation" :state="state" :genders="genders" :record="record"/>
         </v-dialog>
+        <NotificationAlert :info="notificationMessage" v-if="showNotification" />
     </v-app>
 </template>
 
@@ -178,6 +179,7 @@
     import ToolBar from '../../components/General/ToolBar.vue';
     import AdaptativeBreadcrumbs from '../../components/General/AdaptativeBreadcrumbs.vue';
     import PatientModal from '../../components/Patients/PatientModal.vue';
+    import NotificationAlert from '../../components/General/NotificationAlert.vue';
     import { patientsService } from "../../services/patientsService";
     import { mapGetters } from 'vuex';
 
@@ -186,7 +188,8 @@
         components: {
             ToolBar,
             AdaptativeBreadcrumbs,
-            PatientModal
+            PatientModal,
+            NotificationAlert
         },
         data: () => ({
             userInfo: null,
@@ -235,6 +238,8 @@
             patients: [],
             totalItems: 0,
             search: '',
+            showNotification: false,
+            notificationMessage: {}
         }),
 
         computed: {
@@ -280,28 +285,27 @@
                     this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
                 }
             },
-            
             cleanFilters(){
                 this.patient = null
                 this.gender = null
                 this.identification = null
             },
-
             closeModal() {
                 this.isModalOpen = false;
             },
-
-            async savePatientInformacion(data) {
-                console.log(data)
+            async savePatientInformation(data) {
                 try{
+                    console.log(data)
                     if(data.patient != null){
                         const patient = data.patient
+                        let response = null
+                        const found_patient = this.patients.find(p => p.identification === patient.identification);
 
                         if(data.state == "new"){
-                            const found_patient = this.patients.find(p => p.identification === patient.identification);
                             if(found_patient){
                                 return null
                             }
+
                             this.patients.push({
                                 index: this.patients.length + 1,
                                 patient_id: patient.patient_id,
@@ -318,10 +322,8 @@
                             });
                             this.totalItems += 1 
 
-                            await patientsService.store(patient)
+                            response = await patientsService.store(patient)
                         }else{
-                            const found_patient = this.patients.find(p => p.identification === patient.identification);
-
                             if (found_patient) {
                                 found_patient.patient_id = patient.patientId,
                                 found_patient.name = patient.name,
@@ -335,14 +337,35 @@
                                 found_patient.direction = patient.direction,
                                 found_patient.email = patient.email,
                                 found_patient.doctorId = this.userInfo.user_id
+                               
+                                response = await patientsService.update(found_patient.patient_id, found_patient)
                             }
-                            await patientsService.update(found_patient.patient_id, found_patient)
+                        }
+
+                        this.notificationMessage = {
+                            message: response.message, 
+                            ok: true, 
+                            show: true
                         }
                     }
                 }catch (error) {
-                    console.log(error)
+                    this.notificationMessage = {
+                        message:error.response.data.message, 
+                        ok:false, 
+                        show: true
+                    }
+                } finally {
+                    if(this.notificationMessage.show){
+                        this.triggerNotification()
+                    }
                 }
             },
+            triggerNotification() {
+                this.showNotification = true;
+                setTimeout(() => {
+                    this.showNotification = false;
+                }, 3000);
+            }
         }
     }
 </script>

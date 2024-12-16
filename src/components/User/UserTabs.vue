@@ -169,12 +169,12 @@
             userInfo: {},
             genders: [
                 {
-                    label: "Man",
+                    label: "Male",
                     value: "M",
                 },
                 {
-                    label: "Woman",
-                    value: "W"
+                    label: "Female",
+                    value: "F"
                 }
             ],
             avatarUrl: null
@@ -213,14 +213,13 @@
             },
             async updateUserInformation(){
                 this.userInfo.avatar = this.avatarUrl
-
                 try{
                     this.loading = true;
                     const response = await userService.updateUserInformation(this.userInfo);
 
                     this.$emit('notify', {message:response.message, ok:response.success, show: true});
                 }catch(error){
-                    this.$emit('notify', {message:"Failed Saving", ok:false, show: true});
+                    this.$emit('notify', {message:"Failed at Updating", ok:false, show: true});
                 }finally{
                     this.cancelEdit()
                 }
