@@ -20,7 +20,7 @@
                 <v-list>
                     <v-list-item
                         prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-                        :subtitle="userInfo ? userInfo.email:''"
+                        :subtitle="userInfo ? userInfo.email+' | '+userInfo.role:''"
                         :title="userInfo ? userInfo.username:''"
                     >
                     </v-list-item>

@@ -12,8 +12,8 @@ export const patientsService = {
         return response
     },
 
-    async store(data){
-        const response = await axios.post(`${API_URL}/patients/store`, data)
+    async store(data, doctor_id){
+        const response = await axios.post(`${API_URL}/patients/store?doctor_id=${doctor_id}`, data)
         return response
     },
 

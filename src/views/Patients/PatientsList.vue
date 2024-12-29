@@ -124,6 +124,7 @@
                                                     density="compact"
                                                     icon="mdi-menu"
                                                     variant="solo"
+                                                    :disabled="loading"
                                                 >
                                                 </v-btn>
                                             </template>
@@ -156,6 +157,20 @@
                                                             location="top"
                                                         >Generate Recipe</v-tooltip>
                                                     </v-list-item-title>
+                                                    <v-divider class="my-2"></v-divider>
+                                                    <v-list-item-title>
+                                                        <v-btn
+                                                            density="compact"
+                                                            icon="mdi-link-off"
+                                                            variant="solo"
+                                                            @click="openDialog(item)" 
+                                                        >
+                                                        </v-btn>
+                                                        <v-tooltip
+                                                            activator="parent"
+                                                            location="top"
+                                                        >Unlink Patient</v-tooltip>
+                                                    </v-list-item-title>
                                                 </v-list-item>
                                             </v-list>
                                         </v-menu>
@@ -171,6 +186,17 @@
         <v-dialog v-model="isModalOpen" max-width="600px">
             <PatientModal v-model="isModalOpen" @close="isModalOpen = false" @save="savePatientInformation" :state="state" :genders="genders" :record="record"/>
         </v-dialog>
+        <v-dialog v-model="dialogInactivate" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h6">Are you sure to unlink this patient?</v-card-title>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue-darken-1" variant="text" @click="closeDialog">Cancel</v-btn>
+                    <v-btn color="blue-darken-1" variant="text" @click="unlinkPatient">OK</v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <NotificationAlert :info="notificationMessage" v-if="showNotification" />
     </v-app>
 </template>
@@ -181,6 +207,7 @@
     import PatientModal from '../../components/Patients/PatientModal.vue';
     import NotificationAlert from '../../components/General/NotificationAlert.vue';
     import { patientsService } from "../../services/patientsService";
+    import { doctorService } from "../../services/doctorService";
     import { mapGetters } from 'vuex';
 
     export default {
@@ -192,6 +219,7 @@
             NotificationAlert
         },
         data: () => ({
+            dialogInactivate: false,
             userInfo: null,
             record: null,
             state: 'new',
@@ -234,13 +262,20 @@
             gender: null,
             patient: null,
             identification: null,
-            loading: true,
+            loading: false,
             patients: [],
             totalItems: 0,
             search: '',
             showNotification: false,
-            notificationMessage: {}
+            notificationMessage: {},
+            item: null
         }),
+
+        watch: {
+            dialogInactivate (val) {
+                val || this.closeDialog()
+            },
+        },
 
         computed: {
             ...mapGetters('auth', ['getUserData']),
@@ -254,6 +289,7 @@
         methods: {
             async getPatientsByDoctor({ page, itemsPerPage }){
                 try {
+                    this.loading = true;
                     if(!this.userInfo.doctor_id){
                         this.patients = [];
                         this.loading = false;
@@ -278,12 +314,12 @@
                             patient: patient.name + ' ' + patient.lastname,
                             ...patient
                         }));
-
-                        this.loading = false;
                     }
                 } catch (error) {
                     this.$emit('notify', {message: "Error While Searching", ok: false, show: true});
-                }
+                } finally {
+                    this.loading = false;
+                } 
             },
             cleanFilters(){
                 this.patient = null
@@ -295,7 +331,6 @@
             },
             async savePatientInformation(data) {
                 try{
-                    console.log(data)
                     if(data.patient != null){
                         const patient = data.patient
                         let response = null
@@ -322,7 +357,7 @@
                             });
                             this.totalItems += 1 
 
-                            response = await patientsService.store(patient)
+                            response = await patientsService.store(patient, this.userInfo.doctor_id)
                         }else{
                             if (found_patient) {
                                 found_patient.patient_id = patient.patientId,
@@ -365,7 +400,42 @@
                 setTimeout(() => {
                     this.showNotification = false;
                 }, 3000);
-            }
+            },
+            openDialog(item) {
+                this.item = item
+                this.dialogInactivate = true
+            },
+            closeDialog() {
+                this.dialogInactivate = false
+            },
+            async unlinkPatient() {
+                this.loading = true
+                this.closeDialog()
+                try{
+                    const data = {
+                        doctor_id: this.userInfo.doctor_id,
+                        patient_id: this.item.patientId
+                    }
+
+                    const response = await doctorService.unlikPatient(data)
+
+                    this.notificationMessage = {
+                        message:response.message, 
+                        ok:true, 
+                        show: true
+                    }
+                }catch(error){
+                    this.notificationMessage = {
+                        message:error.response.data.message, 
+                        ok:false, 
+                        show: true
+                    }
+                }finally{
+                    this.loading = false
+                    this.getPatientsByDoctor({page: 1, itemsPerPage: this.itemsPerPage})
+                    this.triggerNotification()
+                }
+            },
         }
     }
 </script>
