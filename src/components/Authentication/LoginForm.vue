@@ -141,7 +141,6 @@
       async getUserRoles(email) {
         try {
           const response = await roleService.getUserRoles({email: email});
-          console.log(response)
           if(!response.success){
             this.$emit('notify', {message: response.message, ok: false, show: true});
             return null
