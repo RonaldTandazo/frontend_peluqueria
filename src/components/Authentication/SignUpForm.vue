@@ -41,7 +41,7 @@
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Password
+        Contraseña
       </div>
 
       <v-text-field
@@ -66,16 +66,16 @@
         @click="registerUser"
         :disabled="!isSingUpAvailable"
       >
-        Sign Up
+        Registrarse
       </v-btn>
 
       <v-card-text class="text-center">
-        Do you have Account?
+        Ya tienes cuenta?
         <router-link
           class="text-blue text-decoration-none"
           to="/login"
         >
-          Log in <v-icon icon="mdi-chevron-right"></v-icon>
+          Inicia Sesión<v-icon icon="mdi-chevron-right"></v-icon>
         </router-link>
       </v-card-text>
     </v-card>
@@ -118,13 +118,11 @@
     methods: {
       async verifyEmail(email){
         try{
-          const response = await authService.verifyEmail({email: email})
-          if(!response.success){
-            this.availableEmail = false
-            this.$emit('notify', {message:response.message, ok:response.success, show: true});
-          }else{
+          const response = await authService.verifyEmail({ email })
+
+          if(response.ok){
             this.availableEmail = true
-            this.$emit('notify', {message:response.message, ok:response.success, show: true});
+            this.$emit('notify', {message:response.message, ok:response.ok, show: true});
           }
 
         }catch(error){
@@ -137,13 +135,12 @@
           this.disabled = true
           this.loading = true
           
-          const response = await authService.registerUser({
+          await authService.registerUser({
             username: this.username,
             email: this.email,
             password: this.password,
           });
             
-          this.successMessage = response.message || 'Registration successful'; // Maneja la respuesta aquí
           this.$router.push('/login');
         } catch (error) {
           this.$emit('notify', {message:error.message, ok:false, show: true});

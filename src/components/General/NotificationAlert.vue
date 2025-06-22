@@ -25,12 +25,12 @@
 </script>
 
 <style scoped>
-.custom-notification {
-  background-color: white;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 300px;
-  z-index: 9999; /* Asegúrate de que esté por encima de otros elementos */
-}
+  .custom-notification {
+    background-color: white;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    z-index: 9999;
+  }
 </style>

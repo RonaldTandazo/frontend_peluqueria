@@ -20,7 +20,7 @@
                 <v-list>
                     <v-list-item
                         prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-                        :subtitle="userInfo ? userInfo.email+' | '+userInfo.role:''"
+                        :subtitle="userInfo ? userInfo.email:''"
                         :title="userInfo ? userInfo.username:''"
                     >
                     </v-list-item>
@@ -29,22 +29,6 @@
                 <v-divider></v-divider>
 
                 <v-list>
-                    <v-list-item
-                        key="1"
-                        value="1"
-                        class="custom-icon"
-                        @click="editProfile"
-                    >
-                        <v-list-item-title>
-                            Account Information
-                        </v-list-item-title>
-                        <template v-slot:append>
-                            <v-icon
-                                icon="mdi-account-edit"
-                                color="blue"
-                            ></v-icon>
-                        </template>
-                    </v-list-item>
                     <v-list-item
                         key="2"
                         value="2"
@@ -85,10 +69,6 @@
 
         methods: {
             ...mapActions('auth', ['logout']),
-
-            editProfile(){
-                this.$router.push({ name: 'AccountInformation' });
-            },
 
             onLogout(){
                 this.logout()
