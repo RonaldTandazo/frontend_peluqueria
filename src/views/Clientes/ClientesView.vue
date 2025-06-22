@@ -20,6 +20,8 @@
                                         clearable
                                         variant="outlined"
                                         prepend-inner-icon="mdi-card-account-details"
+                                        maxlength="10"
+                                        type="number"
                                     >    
                                     </v-text-field>
                                 </v-col>
@@ -84,7 +86,7 @@
                             :loading="loading"
                             loading-text="Cargando registros...Por favor espere"
                             :search="search"
-                            item-value="patient_id"
+                            item-value="id_cliente"
                             @update:options="getClientes"
                             fixed-header
                         >
@@ -122,7 +124,25 @@
                                                         <v-tooltip
                                                             activator="parent"
                                                             location="top"
-                                                        >Editar Información</v-tooltip>
+                                                        >
+                                                            Editar Información
+                                                        </v-tooltip>
+                                                    </v-list-item-title>
+                                                    <v-divider class="my-2"></v-divider>
+                                                    <v-list-item-title>
+                                                        <v-btn
+                                                            density="compact"
+                                                            icon="mdi-account-off"
+                                                            variant="solo"
+                                                            @click="openDialog(item)" 
+                                                        >
+                                                        </v-btn>
+                                                        <v-tooltip
+                                                            activator="parent"
+                                                            location="top"
+                                                        >
+                                                            Eliminar Cliente
+                                                        </v-tooltip>
                                                     </v-list-item-title>
                                                 </v-list-item>
                                             </v-list>
@@ -139,19 +159,30 @@
         <v-dialog v-model="isModalOpen" max-width="600px">
             <ClientesModal v-model="isModalOpen" @close="isModalOpen = false" @save="saveCliente" :state="state" :record="record"/>
         </v-dialog>
+        <v-dialog v-model="dialogInactivate" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h6">Está seguro en querer eliminar a este cliente?</v-card-title>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue-darken-1" variant="text" @click="closeDialog">Cancelar</v-btn>
+                    <v-btn color="blue-darken-1" variant="text" @click="deleteCliente">Sí</v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <NotificationAlert :info="notificationMessage" v-if="showNotification" />
     </v-app>
 </template>
 
 <script>
-    import ToolBar from '../components/General/ToolBar.vue';
-    import ClientesModal from '../components/Clientes/ClientesModal.vue';
-    import NotificationAlert from '../components/General/NotificationAlert.vue';
-    import { clientesService } from "../services/clientesService";
+    import ToolBar from '../../components/General/ToolBar.vue';
+    import ClientesModal from '../../components/Clientes/ClientesModal.vue';
+    import NotificationAlert from '../../components/General/NotificationAlert.vue';
+    import { ClientesService } from "../../services/Clientes/ClientesService";
     import { mapGetters } from 'vuex';
     
     export default {
-        name: 'DashboardPage',
+        name: 'ClientesView',
         components: {
             ToolBar,
             ClientesModal,
@@ -209,7 +240,7 @@
                         id_usuario: this.userInfo.id_usuario
                     }
 
-                    const response = await clientesService.getClientes(search, page - 1, itemsPerPage);
+                    const response = await ClientesService.getClientes(search, page - 1, itemsPerPage);
                     if (response.ok){ 
                         this.totalItems = response.data.total;
                         this.clientes = response.data.clientes.map((cliente, index) => ({
@@ -233,6 +264,7 @@
             },
             async saveCliente(data) {
                 try{
+                    this.loading = true;
                     if(data.cliente != null){
                         const cliente = data.cliente
                         let response = null
@@ -243,7 +275,7 @@
                                 return null
                             }
 
-                            response = await clientesService.store(cliente, this.userInfo.id_usuario)
+                            response = await ClientesService.store(cliente, this.userInfo.id_usuario)
                             if (response.ok){
                                 const new_cliente = response.data
                                 this.clientes.push({
@@ -261,9 +293,10 @@
                             }
                         }else if(data.state == 'edit'){
                             if (found_cliente) {
-                                response = await clientesService.update(found_cliente.id_cliente, cliente)
+                                response = await ClientesService.update(found_cliente.id_cliente, cliente)
                                 if(response.ok){
                                     found_cliente.id_cliente = cliente.id_cliente,
+                                    found_cliente.cliente = cliente.nombre + ' ' + cliente.apellido,
                                     found_cliente.nombre = cliente.nombre,
                                     found_cliente.apellido = cliente.apellido,
                                     found_cliente.identificacion = cliente.identificacion,
@@ -288,6 +321,7 @@
                         show: true
                     }
                 } finally {
+                    this.loading = false;
                     if(this.notificationMessage.show){
                         this.triggerNotification()
                     }
@@ -305,6 +339,28 @@
             },
             closeDialog() {
                 this.dialogInactivate = false
+            },
+            async deleteCliente() {
+                this.loading = true
+                this.closeDialog()
+                try{
+                    const response = await ClientesService.delete(this.item.id_cliente)
+                    this.notificationMessage = {
+                        message:response.message, 
+                        ok:true, 
+                        show: true
+                    }
+                }catch(error){
+                    this.notificationMessage = {
+                        message:error.message, 
+                        ok:false, 
+                        show: true
+                    }
+                }finally{
+                    this.loading = false
+                    this.getClientes({page: 1, itemsPerPage: this.itemsPerPage})
+                    this.triggerNotification()
+                }
             }
         }
     }

@@ -82,7 +82,7 @@
   </div>
 </template>
 <script>
-  import { authService } from '../../services/authService';
+  import { AuthService } from '../../services/Autenticacion/AuthService';
 
   export default {
     data: () => ({
@@ -118,7 +118,7 @@
     methods: {
       async verifyEmail(email){
         try{
-          const response = await authService.verifyEmail({ email })
+          const response = await AuthService.verifyEmail({ email })
 
           if(response.ok){
             this.availableEmail = true
@@ -135,7 +135,7 @@
           this.disabled = true
           this.loading = true
           
-          await authService.registerUser({
+          await AuthService.registerUser({
             username: this.username,
             email: this.email,
             password: this.password,

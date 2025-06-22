@@ -2,7 +2,7 @@
     <v-dialog :value="internalModalOpen" max-width="55%" transition="dialog-top-transition" persistent>
         <form @submit.prevent="saveCliente">
             <v-card
-                prepend-icon="mdi-account-injury"
+                prepend-icon="mdi-account"
                 :title="state == 'new' ? 'Nuevo Cliente':'Editar Información'"
             >
                 <v-divider></v-divider>
@@ -44,6 +44,8 @@
                                 variant="outlined"
                                 prepend-inner-icon="mdi-card-account-details"
                                 required
+                                type="number"
+                                maxlength="10"
                             ></v-text-field>
                         </v-col>
                         <v-col cols="6">
@@ -56,6 +58,8 @@
                                 variant="outlined"
                                 density="compact"
                                 required
+                                type="number"
+                                maxlength="10"
                             ></v-text-field>
                         </v-col>
                     </v-row>
@@ -140,7 +144,7 @@
         telefono: null,
         direccion: null,
         email: null,
-        status: 'A'
+        estado: 'Agendada'
     }:props.record
 
     const data = reactive({

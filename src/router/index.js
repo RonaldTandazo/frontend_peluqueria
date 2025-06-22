@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../views/Authentication/AuthenticationPage.vue";
 import LoginForm from "../components/Authentication/LoginForm.vue";
 import SignUpForm from "../components/Authentication/SignUpForm.vue";
-import DashboardPage from "@/views/DashboardPage.vue";
+import ClientesView from "@/views/Clientes/ClientesView.vue";
+import CitasView from "@/views/Citas/CitasView.vue";
 
 const routes = [
   {
@@ -27,7 +28,12 @@ const routes = [
   },
   {
     path: "/home",
-    component: DashboardPage,
+    component: ClientesView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/citas",
+    component: CitasView,
     meta: { requiresAuth: true },
   },
   {

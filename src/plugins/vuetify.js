@@ -113,6 +113,6 @@ export default createVuetify({
         VProgressLinear
     },
     icons: {
-        defaultSet: 'mdi', // Establece Material Design Icons como el set de iconos por defecto
+        defaultSet: 'mdi',
     },
 });

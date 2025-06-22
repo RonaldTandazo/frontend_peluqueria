@@ -62,7 +62,7 @@
 </template>
 
 <script>
-  import { authService } from '../../services/authService';
+  import { AuthService } from '../../services/Autenticacion/AuthService';
   import { jwtDecode } from 'jwt-decode'
   import { mapActions, mapGetters } from 'vuex';
 
@@ -90,8 +90,7 @@
           this.disabled = true
           this.loading = true
 
-          const response = await authService.loginUser({email: this.email, password: this.password});
-          console.log(response)
+          const response = await AuthService.loginUser({email: this.email, password: this.password});
           if (response.data) {
             const token = response.data
             localStorage.setItem('jwt', token);
