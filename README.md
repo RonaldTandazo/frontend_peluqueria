@@ -14,4 +14,4 @@ Una vez clonado el proyecto desde GitHub, debe seguir los siguientes pasos:
 3. Una vez realizados todos los pasos anteriores debe ejecutar el siguiente comando en la terminal: npm run serve, esto levantará el proyecto en su ip local utilizando el puerto indicado en la variable PORT del archivo .env
 
 Nota:
-Debe asegurarse que no haya otro proyecto levantado en el puerto indicado, caso contrario el proyecto será levantado en un puerto distinto, de ser ese el caso deberá ajustar el puerto en la linea 24 del archivo index.js del backend por los conflictos generados por CORS
+Debe asegurarse que no haya otro proyecto levantado en el puerto indicado en la variable VUE_APP_PORT del archivo .env.development.local, caso contrario el proyecto será levantado en un puerto distinto y de ser ese el caso deberá ajustar el puerto en la linea 24 del archivo index.js del backend por los conflictos generados por CORS
