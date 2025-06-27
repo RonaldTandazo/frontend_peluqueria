@@ -85,7 +85,6 @@
                             :items-length="totalItems"
                             :loading="loading"
                             loading-text="Cargando registros...Por favor espere"
-                            :search="search"
                             item-value="id_cliente"
                             @update:options="getClientes"
                             fixed-header
@@ -236,8 +235,7 @@
                     this.loading = true;
                     const search = {
                         identificacion: this.identificacion,
-                        cliente: this.cliente,
-                        id_usuario: this.userInfo.id_usuario
+                        cliente: this.cliente
                     }
 
                     const response = await ClientesService.getClientes(search, page - 1, itemsPerPage);
@@ -275,7 +273,7 @@
                                 return null
                             }
 
-                            response = await ClientesService.store(cliente, this.userInfo.id_usuario)
+                            response = await ClientesService.store(cliente)
                             if (response.ok){
                                 const new_cliente = response.data
                                 this.clientes.push({
@@ -302,8 +300,7 @@
                                     found_cliente.identificacion = cliente.identificacion,
                                     found_cliente.telefono = cliente.telefono,
                                     found_cliente.direccion = cliente.direccion,
-                                    found_cliente.email = cliente.email,
-                                    found_cliente.id_usuario = this.userInfo.id_usuario
+                                    found_cliente.email = cliente.email
                                 }
                             }
                         }

@@ -13,13 +13,41 @@
       rounded="lg"
     >
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Full Name
+        Nombre
+      </div>
+
+      <v-text-field
+        v-model="nombre"
+        density="compact"
+        placeholder="Nombre"
+        prepend-inner-icon="mdi-account"
+        variant="outlined"
+        :disabled="disabled"
+        :loading="loading"
+      ></v-text-field>
+
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Apellido
+      </div>
+
+      <v-text-field
+        v-model="apellido"
+        density="compact"
+        placeholder="Apellido"
+        prepend-inner-icon="mdi-account"
+        variant="outlined"
+        :disabled="disabled"
+        :loading="loading"
+      ></v-text-field>
+
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Username
       </div>
 
       <v-text-field
         v-model="username"
         density="compact"
-        placeholder="Full Name"
+        placeholder="Username"
         prepend-inner-icon="mdi-account"
         variant="outlined"
         :disabled="disabled"
@@ -90,6 +118,8 @@
       disabled: false,
       loading: false,
       username: '',
+      nombre: '',
+      apellido: '',
       email: '',
       password: '',
       availableEmail: true
@@ -137,6 +167,8 @@
           
           await AuthService.registerUser({
             username: this.username,
+            nombre: this.nombre,
+            apellido: this.apellido,
             email: this.email,
             password: this.password,
           });

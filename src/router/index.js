@@ -4,6 +4,7 @@ import LoginForm from "../components/Authentication/LoginForm.vue";
 import SignUpForm from "../components/Authentication/SignUpForm.vue";
 import ClientesView from "@/views/Clientes/ClientesView.vue";
 import CitasView from "@/views/Citas/CitasView.vue";
+import ReportesView from "@/views/Reportes/ReportesView.vue";
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     path: "/citas",
     component: CitasView,
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/reportes",
+    component: ReportesView,
+    meta: { requiresAuth: true }
   },
   {
     path: "/:pathMatch(.*)*",

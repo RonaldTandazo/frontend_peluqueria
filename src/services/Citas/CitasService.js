@@ -35,10 +35,9 @@ export const CitasService = {
         }
     },
 
-    async store(data_cita, id_usuario){
+    async store(data_cita){
         try {
             const data_store = {
-                id_usuario,
                 data_cita
             }
 

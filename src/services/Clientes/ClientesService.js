@@ -36,11 +36,10 @@ export const ClientesService = {
         }
     },
 
-    async store(data_cliente, id_usuario){
+    async store(data_cliente){
         try {
             const data_store = {
-                id_usuario: id_usuario,
-                data_cliente: data_cliente
+                data_cliente
             }
 
             const response = await fetch(`${API_URL}/clientes/store`, {

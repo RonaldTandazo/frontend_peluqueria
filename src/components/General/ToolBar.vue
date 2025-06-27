@@ -56,6 +56,12 @@
                     icon: 'mdi-calendar',
                     route: '/citas'
                 },
+                {
+                    key: 3,
+                    title: 'Reportes',
+                    icon: 'mdi-file-chart',
+                    route: '/reportes'
+                }
             ]
         }),
          methods: {

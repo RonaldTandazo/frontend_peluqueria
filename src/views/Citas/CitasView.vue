@@ -43,7 +43,6 @@
                                     <td class="text-left">{{ item.fecha }}</td>
                                     <td class="text-left">{{ item.hora }}</td>
                                     <td class="text-left">{{ item.estado }}</td>
-                                    <td class="text-left">{{ item.usuario }}</td>
                                     <td class="text-center">
                                         <v-menu v-if="item.estado == 'Agendada' || item.estado == 'Completada' || item.estado == 'En Proceso'">
                                             <template v-slot:activator="{ props }">
@@ -182,7 +181,6 @@
                 {title: "Fecha", key: 'fecha', align: 'center', sortable: false, width:"150px"},
                 {title: "Hora", key: 'hora', align: 'center', sortable: false, width:"150px"},
                 {title: "Estado", key: "estado", align: 'center', sortable: false, width:"200px"},
-                {title: "Agendado Por", key: "usuario", align: 'center', sortable: false, width:"200px"},
                 {title: "Actions", key: 'actions', align: 'center', sortable: false, width:"125px"}
             ],
             loading: false,
@@ -228,8 +226,7 @@
                     this.loading = true;
                     const search = {
                         identificacion: 'null',
-                        cliente: 'null',
-                        id_usuario: this.userInfo.id_usuario
+                        cliente: 'null'
                     }
 
                     const response = await ClientesService.getClientes(search, page - 1, itemsPerPage);
@@ -259,7 +256,7 @@
                                 return null
                             }
 
-                            response = await CitasService.store(cita, this.userInfo.id_usuario)
+                            response = await CitasService.store(cita)
                             if (response.ok){
                                 const new_cita = response.data;
                                 
@@ -270,8 +267,6 @@
                                     cliente: cliente.label,
                                     fecha: new_cita.fecha,
                                     hora: new_cita.hora,
-                                    id_usuario: new_cita.id_usuario,
-                                    usuario: this.userInfo.username,
                                     estado: new_cita.estado
                                 });
                                 this.totalItems += 1
@@ -285,8 +280,6 @@
                                     found_cita.cliente = cliente.label,
                                     found_cita.fecha = cita.fecha,
                                     found_cita.hora = cita.hora,
-                                    found_cita.id_usuario = this.userInfo.id_usuario
-                                    found_cita.usuario = this.userInfo.username
                                     found_cita.estado = cita.estado
                                 }
                             }

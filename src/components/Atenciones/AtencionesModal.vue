@@ -64,7 +64,6 @@
                                             <td class="text-center">{{ item.index }}</td>
                                             <td class="text-left">{{ item.servicio }}</td>
                                             <td class="text-left">{{ item.precio }}</td>
-                                            <td class="text-left">{{ item.usuario }}</td>
                                             <td class="text-center">
                                                 <v-menu>
                                                     <template v-slot:activator="{ props }">
@@ -174,7 +173,6 @@
         {title: "#", key: "index", align: 'center', sortable: false, width:"50px"},
         {title: "Servicio", key: "servicio", align: 'center', sortable: false, width:"200px"},
         {title: "Precio ($)", key: "precio", align: 'center', sortable: false, width:"200px"},
-        {title: "Ingreaso Por", key: "usuario", align: 'center', sortable: false, width:"200px"},
         {title: "Actions", key: 'actions', align: 'center', sortable: false, width:"75px"}
     ];
 
@@ -203,7 +201,7 @@
         
         try {
             loading.value = true;
-            const response = await AtencionesService.store(data, props.usuario.id_usuario);
+            const response = await AtencionesService.store(data);
             if (response.ok){ 
                 const new_atencion = response.data;
                 const found_servicio = props.servicios.find(serv => serv.value === new_atencion.id_servicio);  
@@ -212,8 +210,7 @@
                     id_atencion: new_atencion.id_atencion,
                     id_servicio: new_atencion.id_servicio,
                     servicio: found_servicio.label,
-                    precio: new_atencion.precio,
-                    usuario: props.usuario.username,
+                    precio: new_atencion.precio
                 });
                 totalItems.value += 1;
             }

@@ -36,10 +36,9 @@ export const AtencionesService = {
         }
     },
 
-    async store(data_atencion, id_usuario){
+    async store(data_atencion){
         try {
             const data_store = {
-                id_usuario,
                 data_atencion
             }
 
