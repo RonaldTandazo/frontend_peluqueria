@@ -46,7 +46,7 @@
                             :items="data"
                             :loading="loading"
                             loading-text="Cargando registros...Por favor espere"
-                            item-value="index"
+                            :item-value="reporte == 'Clientes por Cita' || reporte == 'Servicios por Cita' ? 'id_cita':'id_cliente'"
                             @update:options="getDataReporte"
                             fixed-header
                             :show-expand="reporte != 'Clientes por Cita'"
@@ -96,7 +96,7 @@
                                             <v-data-table-virtual
                                                 :headers="nestedColumns"
                                                 :items="item.atenciones"
-                                                item-value="medication_laboratory_id"
+                                                item-value="id_servicio"
                                                 fixed-header
                                             >
                                             </v-data-table-virtual>
