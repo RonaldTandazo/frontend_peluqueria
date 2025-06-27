@@ -28,7 +28,7 @@
                     <v-btn
                         prepend-icon="mdi-cloud-search"
                         color="blue-accent-2"
-                        @click="getDataReporte({page: 1, itemsPerPage})"
+                        @click="getDataReporte()"
                         :disabled="reporte ? false:true"
                     >
                         Buscar
@@ -42,17 +42,68 @@
                 <v-card class="pa-md-3 elevation-1" width="100%">
                     <div class="table-container">
                         <v-data-table-server
-                            v-model:items-per-page="itemsPerPage"
                             :headers="columns"
                             :items="data"
-                            :items-length="totalItems"
                             :loading="loading"
                             loading-text="Cargando registros...Por favor espere"
                             item-value="index"
                             @update:options="getDataReporte"
                             fixed-header
-                            no-data-text="No hay información para mostrar"
+                            :show-expand="reporte != 'Clientes por Cita'"
                         >
+                            <template v-slot:expanded-row="{ columns, item }">
+                                <tr>
+                                    <td :colspan="columns.length">
+                                        <div class="d-flex justify-center" v-if="reporte != 'Clientes por Cita' && reporte != 'Servicios por Cita'">
+                                            <v-tabs v-model="selectedCita" color="primary" direction="vertical" style="padding-top:15px;">
+                                                <v-tab
+                                                    v-for="(cita) in item.citas"
+                                                    :key="cita.id_cita"
+                                                    :value="cita.id_cita"
+                                                    prepend-icon="mdi-chemical-weapon"
+                                                    :text="'Cita:' + cita.fecha + ' ' + cita.hora"
+                                                >
+                                                </v-tab>
+                                            </v-tabs>
+
+                                            <v-tabs-window v-model="selectedCita" class="flex-grow-1">
+                                                <v-tabs-window-item
+                                                    v-for="(cita) in item.citas"
+                                                    :key="cita.id_cita"
+                                                    :value="cita.id_cita"
+                                                >
+                                                    <v-card style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px;">
+                                                        <div style="display: flex; flex-flow: row; justify-content: space-evenly;">
+                                                            <div>
+                                                                Costo Total de la cita: <v-chip prepend-icon="mdi-cash" color="green">${{ cita.costo }}</v-chip>
+                                                            </div>
+                                                            <div>
+                                                                Total de Servicios Realizados: <v-chip prepend-icon="mdi-check-circle" color="primary">{{ cita.atenciones.length }}</v-chip>
+                                                            </div>
+                                                        </div>
+                                                        <v-data-table-virtual
+                                                            :headers="nestedColumns"
+                                                            :items="cita.atenciones"
+                                                            item-value="id_servicio"
+                                                            fixed-header
+                                                        >
+                                                        </v-data-table-virtual>
+                                                    </v-card>
+                                                </v-tabs-window-item>
+                                            </v-tabs-window>
+                                        </div>
+                                        <v-card style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px;" v-if="reporte == 'Servicios por Cita'">
+                                            <v-data-table-virtual
+                                                :headers="nestedColumns"
+                                                :items="item.atenciones"
+                                                item-value="medication_laboratory_id"
+                                                fixed-header
+                                            >
+                                            </v-data-table-virtual>
+                                        </v-card>
+                                    </td>
+                                </tr>
+                            </template>
                         </v-data-table-server>
                     </div>
                 </v-card>
@@ -74,38 +125,39 @@
             NotificationAlert
         },
         data: () => ({
-            itemsPerPage: 5,
             columns: [],
-            totalItems: 0,
+            nestedColumns: [],
+            selectedCita: 0,
             reporte: null,
             data: null,
             loading: false,
             options: [
                 { label: 'Clientes por Cita', value: 'Clientes por Cita' },
                 { label: 'Clientes, Citas y Servicios', value: 'Clientes, Citas y Servicios' },
-                { label: 'Valores por Cliente', value: 'Valores por Cliente' },
-                { label: 'Citas y Servicios', value: 'Citas y Servicios' }
+                { label: 'Valores por citas de clientes', value: 'Valores por citas de clientes' },
+                { label: 'Servicios por Cita', value: 'Servicios por Cita' }
             ],
             showNotification: false,
             notificationMessage: {}
         }),
 
         methods: {
-            async getDataReporte({ page, itemsPerPage }){
+            async getDataReporte(){
                 try {
                     this.loading = true;
-                    const response = await ReportesService.getDataReporte(this.reporte, page - 1, itemsPerPage);
+                    const response = await ReportesService.getDataReporte(this.reporte);
                     if (response.ok){
-                        if(response.data.data.length > 0){
-                            this.totalItems = response.data.total;
+                        if(response.data.info.length > 0){
                             this.columns = response.data.columns
-                            this.data = response.data.data.map((item, index) => ({
+                            this.nestedColumns = response.data.nestedColumns
+                            this.data = response.data.info.map((item, index) => ({
                                 index: index + 1,
                                 ...item
                             }))
                         }
                     }
                 } catch (error) {
+                    this.data = null;
                     this.notificationMessage = {
                         message:error.message, 
                         ok:false, 

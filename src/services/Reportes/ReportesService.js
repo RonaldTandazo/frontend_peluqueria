@@ -2,11 +2,9 @@ const API_URL = process.env.VUE_APP_URL || 'http://localhost:4000/api';
 const token = localStorage.getItem('token');
 
 export const ReportesService = {
-    async getDataReporte(reporte, page, size){
+    async getDataReporte(reporte){
         const queryParams = {
-            reporte: reporte,
-            page: page,
-            size: size
+            reporte
         };
 
         const queryString = new URLSearchParams(queryParams).toString();

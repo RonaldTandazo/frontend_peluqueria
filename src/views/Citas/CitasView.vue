@@ -58,7 +58,7 @@
                                       
                                             <v-list>
                                                 <v-list-item>
-                                                    <v-list-item-title v-if="item.estado == 'Agendada'">
+                                                    <v-list-item-title v-if="item.estado == 'Agendada' || item.estado == 'En Proceso'">
                                                         <v-btn
                                                             density="compact"
                                                             icon="mdi-text-box-edit"
@@ -73,6 +73,7 @@
                                                             Editar Cita
                                                         </v-tooltip>
                                                     </v-list-item-title>
+                                                    <v-divider class="my-2" v-if="item.estado == 'Agendada' || item.estado == 'En Proceso'"></v-divider>
                                                     <v-list-item-title v-if="item.estado == 'Completada' || item.estado == 'En Proceso'">
                                                         <v-btn
                                                             density="compact"
