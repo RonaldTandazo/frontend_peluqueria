@@ -58,17 +58,20 @@
                 </v-card>
             </v-row>
         </v-container>
+        <NotificationAlert :info="notificationMessage" v-if="showNotification" />
     </v-app>
 </template>
 
 <script>
     import { ReportesService } from '@/services/Reportes/ReportesService';
     import ToolBar from '../../components/General/ToolBar.vue';
+    import NotificationAlert from '../../components/General/NotificationAlert.vue';
 
     export default {
         name: 'ReportesView',
         components: {
-            ToolBar
+            ToolBar,
+            NotificationAlert
         },
         data: () => ({
             itemsPerPage: 5,
@@ -82,7 +85,9 @@
                 { label: 'Clientes, Citas y Servicios', value: 'Clientes, Citas y Servicios' },
                 { label: 'Valores por Cliente', value: 'Valores por Cliente' },
                 { label: 'Citas y Servicios', value: 'Citas y Servicios' }
-            ]
+            ],
+            showNotification: false,
+            notificationMessage: {}
         }),
 
         methods: {
@@ -101,11 +106,25 @@
                         }
                     }
                 } catch (error) {
-                    this.$emit('notify', {message: error.message, ok: false, show: true});
+                    this.notificationMessage = {
+                        message:error.message, 
+                        ok:false, 
+                        show: true
+                    }
                 } finally {
                     this.loading = false;
+                    if(this.notificationMessage.show){
+                        this.triggerNotification()
+                    }
                 }
-            }
+            },
+
+            triggerNotification() {
+                this.showNotification = true;
+                setTimeout(() => {
+                    this.showNotification = false;
+                }, 3000);
+            },
         }
     };
 </script>
