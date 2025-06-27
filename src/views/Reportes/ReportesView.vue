@@ -73,7 +73,7 @@
                                                     :value="cita.id_cita"
                                                 >
                                                     <v-card style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px;">
-                                                        <div style="display: flex; flex-flow: row; justify-content: space-evenly;">
+                                                        <div style="display: flex; flex-flow: row; justify-content: space-evenly;" v-if="reporte == 'Valores por citas de clientes'">
                                                             <div>
                                                                 Costo Total de la cita: <v-chip prepend-icon="mdi-cash" color="green">${{ cita.costo }}</v-chip>
                                                             </div>
